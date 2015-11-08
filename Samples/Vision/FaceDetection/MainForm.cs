@@ -26,12 +26,16 @@ using Accord.Imaging.Filters;
 using Accord.Vision.Detection;
 using Accord.Vision.Detection.Cascades;
 using System.Diagnostics;
+using System.IO;
 
 namespace FaceDetection
 {
     public partial class MainForm : Form
     {
-        Bitmap picture = FaceDetection.Properties.Resources.judybats;
+		private static string photoesFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../../Photoes");
+
+	    private string photoFileName;
+	    private Bitmap picture;
 
         HaarObjectDetector detector;
 
@@ -39,19 +43,25 @@ namespace FaceDetection
         {
             InitializeComponent();
 
-            pictureBox1.Image = picture;
 
             cbMode.DataSource = Enum.GetValues(typeof(ObjectDetectorSearchMode));
             cbScaling.DataSource = Enum.GetValues(typeof(ObjectDetectorScalingMode));
 
-            cbMode.SelectedItem = ObjectDetectorSearchMode.NoOverlap;
-            cbScaling.SelectedItem = ObjectDetectorScalingMode.SmallerToGreater;
+            cbMode.SelectedItem = ObjectDetectorSearchMode.Single;
+            cbScaling.SelectedItem = ObjectDetectorScalingMode.GreaterToSmaller;
 
             toolStripStatusLabel1.Text = "Please select the detector options and click Detect to begin.";
 
             HaarCascade cascade = new FaceHaarCascade();
             detector = new HaarObjectDetector(cascade, 30);
         }
+
+		private void LoadImageBtn_Click(object sender, EventArgs e)
+		{
+			photoFileName = this.PhotoName.Text;
+			this.picture = (Bitmap)Image.FromFile(Path.Combine(photoesFolderPath, photoFileName), true);
+			pictureBox1.Image = picture;
+		}
 
 
         private void button1_Click(object sender, EventArgs e)
@@ -80,8 +90,5 @@ namespace FaceDetection
             toolStripStatusLabel1.Text = string.Format("Completed detection of {0} objects in {1}.",
                 objects.Length, sw.Elapsed);
         }
-
-
-
     }
 }
