@@ -27,11 +27,13 @@ using Accord.Vision.Detection;
 using Accord.Vision.Detection.Cascades;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace FaceDetection
 {
     public partial class MainForm : Form
     {
+		private WebCam_Capture.WebCamCapture WebCamCapture;
 		private static string photoesFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../../../Photoes");
 
 	    private string photoFileName;
@@ -60,12 +62,25 @@ namespace FaceDetection
 		{
 			photoFileName = this.PhotoName.Text;
 			this.picture = (Bitmap)Image.FromFile(Path.Combine(photoesFolderPath, photoFileName), true);
-			pictureBox1.Image = picture;
+			fixedPicture.Image = picture;
+		}
+
+		/// <summary>
+		/// An image was capture
+		/// </summary>
+		/// <param name="source">control raising the event</param>
+		/// <param name="e">WebCamEventArgs</param>
+		private void WebCamCapture_ImageCaptured(object source, WebCam_Capture.WebcamEventArgs e)
+		{
+			// set the picturebox picture
+			this.webCamPicture.Image = e.WebCamImage;
 		}
 
 
         private void button1_Click(object sender, EventArgs e)
         {
+			this.picture = (Bitmap)this.fixedPicture.Image;
+
             detector.SearchMode = (ObjectDetectorSearchMode)cbMode.SelectedValue;
             detector.ScalingMode = (ObjectDetectorScalingMode)cbScaling.SelectedValue;
             detector.ScalingFactor = 1.5f;
@@ -84,11 +99,38 @@ namespace FaceDetection
             if (objects.Length > 0)
             {
                 RectanglesMarker marker = new RectanglesMarker(objects, Color.Fuchsia);
-                pictureBox1.Image = marker.Apply(picture);
+				// this for webcamera images
+				Pen pen = new Pen(Color.Red);
+				Graphics g = fixedPicture.CreateGraphics();
+				g.DrawRectangle(pen, objects.First());
+
+				//fixedPicture.Image = marker.Apply(picture);
             }
 
             toolStripStatusLabel1.Text = string.Format("Completed detection of {0} objects in {1}.",
                 objects.Length, sw.Elapsed);
         }
+
+		private void startButton_Click(object sender, EventArgs e)
+		{
+			// change the capture time frame
+			this.WebCamCapture.TimeToCapture_milliseconds = 2;
+
+			// start the video capture. let the control handle the
+			// frame numbers.
+			this.WebCamCapture.Start(0);
+		}
+
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+			// set the image capture size
+			this.WebCamCapture.CaptureHeight = this.webCamPicture.Height;
+			this.WebCamCapture.CaptureWidth = this.webCamPicture.Width;
+		}
+
+		private void catchPicture_button_Click(object sender, EventArgs e)
+		{
+			this.fixedPicture.Image = this.webCamPicture.Image;
+		}
     }
 }
