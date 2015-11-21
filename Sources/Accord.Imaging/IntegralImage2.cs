@@ -212,14 +212,13 @@ namespace Accord.Imaging
         public static IntegralImage2 FromBitmap(UnmanagedImage image, int channel, bool computeTilted
             /*, TODO: Rectangle roi*/)
         {
-
             // check image format
-            if (!(image.PixelFormat == PixelFormat.Format8bppIndexed ||
-                image.PixelFormat == PixelFormat.Format24bppRgb ||
-                image.PixelFormat == PixelFormat.Format32bppArgb))
-            {
-                throw new UnsupportedImageFormatException("Only grayscale and 24 bpp RGB images are supported.");
-            }
+			//if (!(image.PixelFormat == PixelFormat.Format8bppIndexed ||
+			//	image.PixelFormat == PixelFormat.Format24bppRgb ||
+			//	image.PixelFormat == PixelFormat.Format32bppArgb))
+			//{
+			//	throw new UnsupportedImageFormatException("Only grayscale and 24 bpp RGB images are supported.");
+			//}
 
             int pixelSize = System.Drawing.Image.GetPixelFormatSize(image.PixelFormat) / 8;
 
@@ -236,8 +235,8 @@ namespace Accord.Imaging
             int nWidth = im.nWidth, nHeight = im.nHeight;
             int tWidth = im.tWidth, tHeight = im.tHeight;
 
-            if (image.PixelFormat == PixelFormat.Format8bppIndexed && channel != 0)
-                throw new ArgumentException("Only the first channel is available for 8 bpp images.", "channel");
+			//if (image.PixelFormat == PixelFormat.Format8bppIndexed && channel != 0)
+			//	throw new ArgumentException("Only the first channel is available for 8 bpp images.", "channel");
 
             byte* srcStart = (byte*)image.ImageData.ToPointer() + channel;
 

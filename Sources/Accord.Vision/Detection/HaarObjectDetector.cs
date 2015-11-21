@@ -241,7 +241,7 @@ namespace Accord.Vision.Detection
             this.minSize = new Size(minSize, minSize);
             this.searchMode = searchMode;
             this.ScalingMode = scalingMode;
-            this.factor = scaleFactor;
+	        this.factor = scaleFactor;
             this.detectedObjects = new List<Rectangle>();
 
             this.baseWidth = cascade.Width;
