@@ -57,12 +57,9 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AForge">
-      <HintPath>..\..\..\Dependencies\AForge.dll</HintPath>
-    </Reference>
-    <Reference Include="AForge.Imaging, Version=2.1.2.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b, processorArchitecture=MSIL">
+    <Reference Include="AForge.Imaging, Version=2.2.4.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <Private>True</Private>
+      <HintPath>..\..\..\Dependencies\AForge.Imaging.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -112,10 +109,6 @@
     <ProjectReference Include="..\..\..\..\..\C__Webcam_161075762003\WebCam_Capture.csproj">
       <Project>{782c366a-dd3b-4ed3-8a21-71a1f03947ed}</Project>
       <Name>WebCam_Capture</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Sources\Accord.Imaging\Accord.Imaging.csproj">
-      <Project>{4959A83D-F78F-439E-80A5-41583ECEAAC6}</Project>
-      <Name>Accord.Imaging</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Sources\Accord.Vision\Accord.Vision.csproj">
       <Project>{C70A159D-74A4-405F-9A7F-C17ACF451CCA}</Project>

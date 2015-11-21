@@ -1,38 +1,4 @@
-﻿// Accord Vision Library
-// The Accord.NET Framework (LGPL) 
-// http://accord.googlecode.com
-//
-// Copyright © César Souza, 2009-2012
-// cesarsouza at gmail.com
-//
-// Copyright © Masakazu Ohtsuka, 2008
-//   This work is partially based on the original Project Marilena code,
-//   distributed under a 2-clause BSD License. Details are listed below.
-//
-//
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//
-//   * Redistribution's of source code must retain the above copyright notice,
-//     this list of conditions and the following disclaimer.
-//
-//   * Redistribution's in binary form must reproduce the above copyright notice,
-//     this list of conditions and the following disclaimer in the documentation
-//     and/or other materials provided with the distribution.
-//
-// This software is provided by the copyright holders and contributors "as is" and
-// any express or implied warranties, including, but not limited to, the implied
-// warranties of merchantability and fitness for a particular purpose are disclaimed.
-// In no event shall the Intel Corporation or contributors be liable for any direct,
-// indirect, incidental, special, exemplary, or consequential damages
-// (including, but not limited to, procurement of substitute goods or services;
-// loss of use, data, or profits; or business interruption) however caused
-// and on any theory of liability, whether in contract, strict liability,
-// or tort (including negligence or otherwise) arising in any way out of
-// the use of this software, even if advised of the possibility of such damage.
-//
-
-namespace Accord.Vision.Detection
+﻿namespace Accord.Vision.Detection
 {
     using System;
     using System.Collections.Generic;
@@ -91,40 +57,6 @@ namespace Accord.Vision.Detection
         SmallerToGreater,
     }
 
-    /// <summary>
-    ///   Viola-Jones Object Detector based on Haar-like features.
-    /// </summary>
-    /// <remarks>
-    /// 
-    /// <para>
-    ///   The Viola-Jones object detection framework is the first object detection framework
-    ///   to provide competitive object detection rates in real-time proposed in 2001 by Paul
-    ///   Viola and Michael Jones. Although it can be trained to detect a variety of object
-    ///   classes, it was motivated primarily by the problem of face detection.</para>
-    ///   
-    /// <para>
-    ///   The implementation of this code has used Viola and Jones' original publication, the
-    ///   OpenCV Library and the Marilena Project as reference. OpenCV is released under a BSD
-    ///   license, it is free for both academic and commercial use. Please be aware that some
-    ///   particular versions of the Haar object detection framework are patented by Viola and
-    ///   Jones and may be subject to restrictions for use in commercial applications. The code
-    ///   has been implemented with full support for tilted Haar features from the ground up.</para>
-    ///   
-    ///  <para>
-    ///     References:
-    ///     <list type="bullet">
-    ///       <item><description>
-    ///         <a href="http://www.cs.utexas.edu/~grauman/courses/spring2007/395T/papers/viola_cvpr2001.pdf">
-    ///         Viola, P. and Jones, M. (2001). Rapid Object Detection using a Boosted Cascade
-    ///         of Simple Features.</a></description></item>
-    ///       <item><description>
-    ///         <a href="http://en.wikipedia.org/wiki/Viola-Jones_object_detection_framework">
-    ///         http://en.wikipedia.org/wiki/Viola-Jones_object_detection_framework</a>
-    ///       </description></item>
-    ///     </list>
-    ///   </para>
-    /// </remarks>
-    /// 
     public class HaarObjectDetector : IObjectDetector
     {
 
