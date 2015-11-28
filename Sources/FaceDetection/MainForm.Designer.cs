@@ -58,7 +58,7 @@
 			// button1
 			// 
 			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.button1.Location = new System.Drawing.Point(29, 19);
+			this.button1.Location = new System.Drawing.Point(791, 18);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(109, 46);
 			this.button1.TabIndex = 5;
@@ -70,9 +70,9 @@
 			// 
 			this.fixedPicture.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.fixedPicture.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.fixedPicture.Location = new System.Drawing.Point(12, 12);
+			this.fixedPicture.Location = new System.Drawing.Point(481, 22);
 			this.fixedPicture.Name = "fixedPicture";
-			this.fixedPicture.Size = new System.Drawing.Size(287, 265);
+			this.fixedPicture.Size = new System.Drawing.Size(448, 381);
 			this.fixedPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.fixedPicture.TabIndex = 4;
 			this.fixedPicture.TabStop = false;
@@ -81,9 +81,9 @@
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 368);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 529);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(613, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(963, 22);
 			this.statusStrip1.TabIndex = 8;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
@@ -98,37 +98,37 @@
 			this.panel2.Controls.Add(this.catchPicture_button);
 			this.panel2.Controls.Add(this.startButton);
 			this.panel2.Controls.Add(this.button1);
-			this.panel2.Location = new System.Drawing.Point(12, 283);
+			this.panel2.Location = new System.Drawing.Point(12, 428);
 			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(589, 82);
+			this.panel2.Size = new System.Drawing.Size(917, 82);
 			this.panel2.TabIndex = 14;
 			// 
 			// catchPicture_button
 			// 
-			this.catchPicture_button.Location = new System.Drawing.Point(465, 19);
+			this.catchPicture_button.Location = new System.Drawing.Point(654, 18);
 			this.catchPicture_button.Name = "catchPicture_button";
 			this.catchPicture_button.Size = new System.Drawing.Size(106, 45);
 			this.catchPicture_button.TabIndex = 1;
 			this.catchPicture_button.Text = "Catch";
 			this.catchPicture_button.UseVisualStyleBackColor = true;
-			this.catchPicture_button.Click += new System.EventHandler(this.catchPicture_button_Click);
+			this.catchPicture_button.Click += new System.EventHandler(this.CatchPicture_button_Click);
 			// 
 			// startButton
 			// 
-			this.startButton.Location = new System.Drawing.Point(300, 19);
+			this.startButton.Location = new System.Drawing.Point(12, 18);
 			this.startButton.Name = "startButton";
 			this.startButton.Size = new System.Drawing.Size(114, 46);
 			this.startButton.TabIndex = 0;
 			this.startButton.Text = "Start";
 			this.startButton.UseVisualStyleBackColor = true;
-			this.startButton.Click += new System.EventHandler(this.startButton_Click);
+			this.startButton.Click += new System.EventHandler(this.StartButton_Click);
 			// 
 			// webCamPicture
 			// 
 			this.webCamPicture.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.webCamPicture.Location = new System.Drawing.Point(312, 12);
+			this.webCamPicture.Location = new System.Drawing.Point(12, 22);
 			this.webCamPicture.Name = "webCamPicture";
-			this.webCamPicture.Size = new System.Drawing.Size(289, 265);
+			this.webCamPicture.Size = new System.Drawing.Size(447, 381);
 			this.webCamPicture.TabIndex = 15;
 			this.webCamPicture.TabStop = false;
 			// 
@@ -136,7 +136,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(613, 390);
+			this.ClientSize = new System.Drawing.Size(963, 551);
 			this.Controls.Add(this.webCamPicture);
 			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.statusStrip1);
