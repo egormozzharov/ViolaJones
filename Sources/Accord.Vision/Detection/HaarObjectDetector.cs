@@ -61,7 +61,7 @@
     {
 
         private List<Rectangle> detectedObjects;
-        private HaarClassifier classifier;
+        private HaarClassifier _haarClassifier;
 
         private ObjectDetectorSearchMode searchMode = ObjectDetectorSearchMode.NoOverlap;
         private ObjectDetectorScalingMode scalingMode = ObjectDetectorScalingMode.GreaterToSmaller;
@@ -169,7 +169,7 @@
         public HaarObjectDetector(HaarCascade cascade, int minSize, ObjectDetectorSearchMode searchMode, float scaleFactor,
             ObjectDetectorScalingMode scalingMode)
         {
-            this.classifier = new HaarClassifier(cascade);
+            this._haarClassifier = new HaarClassifier(cascade);
             this.minSize = new Size(minSize, minSize);
             this.searchMode = searchMode;
             this.ScalingMode = scalingMode;
@@ -280,7 +280,7 @@
         /// </summary>
         public HaarClassifier Classifier
         {
-            get { return classifier; }
+            get { return _haarClassifier; }
         }
 
         /// <summary>
@@ -311,11 +311,9 @@
         /// 
         public Rectangle[] ProcessFrame(UnmanagedImage image)
         {
-            // Creates an integral image representation of the frame
             IntegralImage2 integralImage = IntegralImage2.FromBitmap(
-                image, channel, classifier.Cascade.HasTiltedFeatures);
+                image, channel, _haarClassifier.Cascade.HasTiltedFeatures);
 
-            // Creates a new list of detected objects.
             this.detectedObjects.Clear();
 
             int width = integralImage.Width;
@@ -325,7 +323,6 @@
             if (steps == null || width != lastWidth || height != lastHeight)
                 update(width, height);
 
-
             Rectangle window = Rectangle.Empty;
 
             // For each scaling step
@@ -334,7 +331,7 @@
                 float scaling = steps[i];
 
                 // Set the classifier window scale
-                classifier.Scale = scaling;
+                _haarClassifier.Scale = scaling;
 
                 // Get the scaled window size
                 window.Width = (int)(baseWidth * scaling);
@@ -363,99 +360,15 @@
                 int xEnd = width - window.Width;
                 int yEnd = height - window.Height;
 
-                // Check if we should run in parallel or sequential
-                if (!UseParallelProcessing)
+                if (UseParallelProcessing)
                 {
-                    // Sequential mode. Scan the integral image searching
-                    // for objects in the window without parallelization.
-
-                    // For every pixel in the window column
-                    for (int y = 0; y < yEnd; y += yStep)
-                    {
-                        window.Y = y;
-
-                        // For every pixel in the window row
-                        for (int x = 0; x < xEnd; x += xStep)
-                        {
-                            window.X = x;
-
-                            if (searchMode == ObjectDetectorSearchMode.NoOverlap && overlaps(window))
-                                continue; // We have already detected something here, moving along.
-
-                            // Try to detect and object inside the window
-                            if (classifier.Compute(integralImage, window))
-                            {
-                                // an object has been detected
-                                detectedObjects.Add(window);
-
-                                if (searchMode == ObjectDetectorSearchMode.Single)
-                                    goto EXIT; // Stop on first object found
-                            }
-                        }
-                    }
+					ScanImageInParallel(ref detectedObjects, window, integralImage, yEnd, yStep, xEnd, xStep);
                 }
-
                 else
                 {
-                    // Parallel mode. Scan the integral image searching
-                    // for objects in the window with parallelization.
-                    ConcurrentBag<Rectangle> bag = new ConcurrentBag<Rectangle>();
-
-                    int numSteps = (int)Math.Ceiling((double)yEnd / yStep);
-
-                    // For each pixel in the window column
-                    Parallel.For(0, numSteps, (j, options) =>
-                    {
-                        int y = j * yStep;
-
-                        // Create a local window reference
-                        Rectangle localWindow = window;
-
-                        localWindow.Y = y;
-
-                        // For each pixel in the window row
-                        for (int x = 0; x < xEnd; x += xStep)
-                        {
-                            if (options.ShouldExitCurrentIteration) return;
-
-                            localWindow.X = x;
-
-                            // Try to detect and object inside the window
-                            if (classifier.Compute(integralImage, localWindow))
-                            {
-                                // an object has been detected
-                                bag.Add(localWindow);
-
-                                if (searchMode == ObjectDetectorSearchMode.Single)
-                                    options.Stop();
-                            }
-                        }
-                    });
-
-                    // If required, avoid adding overlapping objects at
-                    // the expense of extra computation. Otherwise, only
-                    // add objects to the detected objects collection.
-                    if (searchMode == ObjectDetectorSearchMode.NoOverlap)
-                    {
-                        foreach (Rectangle obj in bag)
-                            if (!overlaps(obj)) detectedObjects.Add(obj);
-                    }
-                    else if (searchMode == ObjectDetectorSearchMode.Single)
-                    {
-                        if (bag.TryPeek(out window))
-                        {
-                            detectedObjects.Add(window);
-                            goto EXIT;
-                        }
-                    }
-                    else
-                    {
-                        foreach (Rectangle obj in bag)
-                            detectedObjects.Add(obj);
-                    }
+					ScanImage(ref detectedObjects, window, integralImage, yEnd, yStep, xEnd, xStep);
                 }
             }
-
 
         EXIT:
 
@@ -466,6 +379,100 @@
 
             return objects; // Returns the array of detected objects.
         }
+
+		private void ScanImage(ref List<Rectangle> detectedObjects, Rectangle window, IntegralImage2 integralImage,
+			int yEnd, int yStep, int xEnd, int xStep)
+	    {
+			// Sequential mode. Scan the integral image searching
+			// for objects in the window without parallelization.
+
+			// For every pixel in the window column
+			for (int y = 0; y < yEnd; y += yStep)
+			{
+				window.Y = y;
+
+				// For every pixel in the window row
+				for (int x = 0; x < xEnd; x += xStep)
+				{
+					window.X = x;
+
+					if (searchMode == ObjectDetectorSearchMode.NoOverlap && overlaps(window))
+						continue; // We have already detected something here, moving along.
+
+					// Try to detect and object inside the window
+					if (_haarClassifier.Compute(integralImage, window))
+					{
+						// an object has been detected
+						detectedObjects.Add(window);
+
+						if (searchMode == ObjectDetectorSearchMode.Single)
+							return;
+					}
+				}
+			}
+	    }
+
+		private void ScanImageInParallel(ref List<Rectangle> detectedObjects, Rectangle window, IntegralImage2 integralImage,
+			int yEnd, int yStep, int xEnd, int xStep)
+	    {
+			//ScanImageInParallel(ref detectedObjects, window, integralImage, yEnd, yStep, xEnd, xStep);
+			// Parallel mode. Scan the integral image searching
+			// for objects in the window with parallelization.
+			ConcurrentBag<Rectangle> bag = new ConcurrentBag<Rectangle>();
+
+			int numSteps = (int)Math.Ceiling((double)yEnd / yStep);
+
+			// For each pixel in the window column
+			Parallel.For(0, numSteps, (j, options) =>
+			{
+				int y = j * yStep;
+
+				// Create a local window reference
+				Rectangle localWindow = window;
+
+				localWindow.Y = y;
+
+				// For each pixel in the window row
+				for (int x = 0; x < xEnd; x += xStep)
+				{
+					if (options.ShouldExitCurrentIteration) return;
+
+					localWindow.X = x;
+
+					// Try to detect and object inside the window
+					if (_haarClassifier.Compute(integralImage, localWindow))
+					{
+						// an object has been detected
+						bag.Add(localWindow);
+
+						if (searchMode == ObjectDetectorSearchMode.Single)
+							options.Stop();
+					}
+				}
+			});
+
+			// If required, avoid adding overlapping objects at
+			// the expense of extra computation. Otherwise, only
+			// add objects to the detected objects collection.
+			if (searchMode == ObjectDetectorSearchMode.NoOverlap)
+			{
+				foreach (Rectangle obj in bag)
+					if (!overlaps(obj)) detectedObjects.Add(obj);
+			}
+			else if (searchMode == ObjectDetectorSearchMode.Single)
+			{
+				if (bag.TryPeek(out window))
+				{
+					detectedObjects.Add(window);
+					return;
+				}
+			}
+			else
+			{
+				foreach (Rectangle obj in bag)
+					detectedObjects.Add(obj);
+			}
+	    }
 
         private void update(int width, int height)
         {
