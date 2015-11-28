@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Accord.Vision.Detection;
-using Accord.Vision.Detection.Cascades;
-using System.Linq;
 
 namespace FaceDetection
 {
@@ -14,14 +11,9 @@ namespace FaceDetection
 	    private string photoFileName;
 	    private Bitmap picture;
 
-        HaarObjectDetector detector;
-
         public MainForm()
         {
             InitializeComponent();
-
-            HaarCascade cascade = new FaceHaarCascade();
-            detector = new HaarObjectDetector(cascade, 30);
         }
 
 		#region EventActions
@@ -39,17 +31,6 @@ namespace FaceDetection
         private void Detect_buttonClick(object sender, EventArgs e)
         {
 			this.picture = (Bitmap)this.fixedPicture.Image;
-
-            SetDetectSettings();
-
-            Rectangle[] objects = detector.ProcessFrame(picture);
-
-            if (objects.Length > 0)
-            {
-				Pen pen = new Pen(Color.Red);
-				Graphics g = fixedPicture.CreateGraphics();
-				g.DrawRectangle(pen, objects.First());
-            }
         }
 
 		private void startButton_Click(object sender, EventArgs e)
@@ -75,13 +56,5 @@ namespace FaceDetection
 		}
 
 		#endregion
-
-		private void SetDetectSettings()
-		{
-			detector.SearchMode = ObjectDetectorSearchMode.Single;
-			detector.ScalingMode = ObjectDetectorScalingMode.GreaterToSmaller;
-			detector.ScalingFactor = 1.5f;
-			detector.UseParallelProcessing = true;
-		}
 	}
 }

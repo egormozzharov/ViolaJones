@@ -142,7 +142,7 @@
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.fixedPicture);
 			this.Name = "MainForm";
-			this.Text = "Face Detection";
+			this.Text = "Eye finder";
 			this.Load += new System.EventHandler(this.MainForm_Load);
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).EndInit();
 			this.statusStrip1.ResumeLayout(false);
