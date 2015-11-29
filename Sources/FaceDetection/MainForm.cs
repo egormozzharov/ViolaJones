@@ -52,6 +52,9 @@ namespace FaceDetection
 			//start the video capture. let the control handle the
 			//frame numbers.
 			this.WebCamCapture.Start(0);
+
+			this.firstParam.Text = 1.254.ToString();
+			this.secondParam.Text = 2.ToString();
 		}
 
 		private void CatchPicture_button_Click(object sender, EventArgs e)
@@ -67,32 +70,56 @@ namespace FaceDetection
 		private void Detect_buttonClick(object sender, EventArgs e)
 		{
 			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)this.fixedPicture.Image);
-
-			Image<Bgr, byte> frame = imageFrame;
-
-			IEnumerable<Rectangle> faces = _faceCascadeClassifier.DetectMultiScale(frame, 1.1, 1, new Size(250, 250));
+			IEnumerable<Rectangle> faces = _faceCascadeClassifier.DetectMultiScale(imageFrame, 1.1, 1, new Size(250, 250));
 			if (faces.Any())
 			{
 				Color color = Color.BurlyWood;
 				Rectangle face = faces.First();
 				imageFrame.Draw(face, new Bgr(color));
-				imageFrame = imageFrame.Copy(face);
 
-				imageFrame.Draw(new LineSegment2D(new Point(Convert.ToInt32(face.Width * 0.5), 0),
+				Image<Bgr, Byte> faceFrame = imageFrame.Copy(face);
+				imageFrame = faceFrame;
+
+				//middle line
+				faceFrame.Draw(new LineSegment2D(new Point(Convert.ToInt32(face.Width * 0.5), 0),
 					new Point(Convert.ToInt32(face.Width * 0.5),face.Height)), new Bgr(color), 1);
 
+				IList<Point> eyesCenters = EyesDetection(faceFrame);
+				Point mouthPoint = MouthDetection(faceFrame);
+				EyePair eyePair = GetEyePair(eyesCenters);
+				if (this.noseCheck.Checked)
+				{
+					IList<Point> nosePoints = NoseDetection(faceFrame, eyePair);
+				}
 
+				//koeffs
+				this.sideLongTiltLabel.Text = MathHelper.AngleWithHorizont(eyesCenters[0], eyesCenters[1]).ToString();
 
-				EyesDetection(imageFrame);
-				MouthDetection(imageFrame);
-				NoseDetection(imageFrame);
+				double dleft = MathHelper.LineLength(eyesCenters[0], mouthPoint);
+				double dright = MathHelper.LineLength(eyesCenters[1], mouthPoint);
+
+				double first = Convert.ToDouble(this.firstParam.Text);
+				double second = Convert.ToDouble(this.secondParam.Text);
+				double dExp = (((dleft + dright)/first)/second);
+				this.dexpected.Text = dExp.ToString();
+
+				double dEyes = MathHelper.LineLength(eyesCenters[0], eyesCenters[1]);
+				this.deyes.Text = dEyes.ToString();
+
+				this.Dkoef.Text = (dExp/dEyes).ToString();
+
+				//drawing
+				faceFrame.Draw(new LineSegment2D(eyesCenters[0], eyesCenters[1]), new Bgr(Color.Black), 1);
+				faceFrame.Draw(new LineSegment2D(eyesCenters[0], mouthPoint), new Bgr(Color.Black), 1);
+				faceFrame.Draw(new LineSegment2D(eyesCenters[1], mouthPoint), new Bgr(Color.Black), 1);
 			}
 
 
 			fixedPicture.Image = imageFrame.Bitmap;
 		}
 
-		private void EyesDetection(Image<Bgr, Byte> faceFrame)
+
+		private IList<Point> EyesDetection(Image<Bgr, Byte> faceFrame)
 		{
 			Color color = Color.Aqua;
 			Rectangle eyesFrame = new Rectangle(0, 0, faceFrame.Width, Convert.ToInt32(faceFrame.Height * 0.7));
@@ -110,11 +137,10 @@ namespace FaceDetection
 				eyesCenters.Add(centerPoint);
 				DrawPoint(centerPoint, faceFrame, (color));
 			}
-			faceFrame.Draw(new LineSegment2D(eyesCenters[0], eyesCenters[1]), new Bgr(Color.Black), 1);
-			this.sideLongTiltLabel.Text = MathHelper.AngleWithHorizont(eyesCenters[0], eyesCenters[1]).ToString();
+			return eyesCenters;
 		}
 
-		private void MouthDetection(Image<Bgr, Byte> faceFrame)
+		private Point MouthDetection(Image<Bgr, Byte> faceFrame)
 		{
 			Color color = Color.Red;
 			int mouthFrameHeight = Convert.ToInt32(faceFrame.Height * 0.3);
@@ -125,16 +151,19 @@ namespace FaceDetection
 
 			Image<Bgr, byte> mouthRegion = faceFrame.Copy(mouthFrame);
 			IEnumerable<Rectangle> mouths = _mouthCascadeClassifier.DetectMultiScale(mouthRegion, 1.1, 1, Size.Empty);
-			foreach (Rectangle mouth in mouths)
+			Point centerPoint = new Point();
+			if (mouths.Any())
 			{
+				Rectangle mouth = mouths.First();
 				Rectangle mouthAbsolute = new Rectangle(mouth.X, mouth.Y + mouthFrameY, mouth.Width, mouth.Height);
 				faceFrame.Draw(mouthAbsolute, new Bgr(color));
-				Point centerPoint = mouthAbsolute.Center();
+				centerPoint = mouthAbsolute.Center();
 				DrawPoint(centerPoint, faceFrame, color);
 			}
+			return centerPoint;
 		}
 
-		private void NoseDetection(Image<Bgr, Byte> faceFrame)
+		private IList<Point> NoseDetection(Image<Bgr, Byte> faceFrame, EyePair eyePair)
 		{
 			Color color = Color.BurlyWood;
 			int noseFrameHeight = Convert.ToInt32(faceFrame.Height * 0.25);
@@ -144,13 +173,20 @@ namespace FaceDetection
 
 			Image<Bgr, byte> noseRegion = faceFrame.Copy(noseFrame);
 			IEnumerable<Rectangle> noses = _noseCascadeClassifier.DetectMultiScale(noseRegion, 1.1, 2, Size.Empty);
+			IList<Point> centerPoints = new List<Point>();
 			foreach (Rectangle nose in noses)
 			{
 				Rectangle noseAbsolute = new Rectangle(nose.X, nose.Y + noseFrameY, nose.Width, nose.Height);
-				faceFrame.Draw(noseAbsolute, new Bgr(color));
-				Point centerPoint = noseAbsolute.Center();
-				DrawPoint(centerPoint, faceFrame, color);
+				Point noseCenter = noseAbsolute.Center();
+				centerPoints.Add(noseCenter);
+				if (noseCenter.X >= eyePair.LeftEye.X && noseCenter.X <= eyePair.RightEye.X)
+				{
+					color = Color.Brown;
+					faceFrame.Draw(noseAbsolute, new Bgr(color));
+					DrawPoint(noseAbsolute.Center(), faceFrame, color);
+				}
 			}
+			return centerPoints;
 		}
 
 		#endregion
@@ -167,9 +203,25 @@ namespace FaceDetection
 			DrawCoordinates(centerPoint, imageFrame);
 		}
 
-		private Image<Bgr, byte> SkinMask(Image<Bgr, Byte> image, Rectangle face)
+		private EyePair GetEyePair(IList<Point> eyesCenters)
 		{
-			Image<Bgr, byte> faceMask = image.Copy(face);
+			EyePair result = new EyePair();
+			if (eyesCenters[0].X < eyesCenters[1].X)
+			{
+				result.LeftEye = eyesCenters[0];
+				result.RightEye = eyesCenters[1];
+			}
+			else
+			{
+				result.LeftEye = eyesCenters[1];
+				result.RightEye = eyesCenters[0];
+			}
+			return result;
+		}
+
+		private void SkinMask(ref Image<Bgr, Byte> faceFrame)
+		{
+			Image<Bgr, byte> faceMask = faceFrame;
 
 			for (int j = 0; j < faceMask.Height; j++)
 			{
@@ -179,9 +231,9 @@ namespace FaceDetection
 					if ((color.Red > 1.04*color.Green)
 					    && (color.Green <= 8*color.Blue)
 					    && (color.Green > 0.9*color.Blue
-					        && (color.Red < 3.8*color.Green)))
+					    && (color.Red < 2.8*color.Green)))
 					{
-
+						faceMask[j, i] = new Bgr(Color.White);
 					}
 					else
 					{
@@ -189,35 +241,6 @@ namespace FaceDetection
 					}
 				}
 			}
-			return faceMask;
-		}
-
-		
-	}
-
-	public static class Extensions
-	{
-		public static Point Center(this Rectangle rect)
-		{
-			return new Point(rect.Left + rect.Width / 2,
-				rect.Top + rect.Height / 2);
-		}
-	}
-
-	public static class MathHelper
-	{
-		public static double AngleWithHorizont(Point p1, Point p2)
-		{
-			return RadianToDegree(Math.Atan2(p1.Y - p2.Y, p1.X - p2.X)) % 180;
-		}
-
-		private static double RadianToDegree(double radian)
-		{
-			var degree = radian * (180.0 / Math.PI);
-			if (degree < 0)
-				degree = 360 + degree;
-
-			return degree;
-		}
+		}	
 	}
 }
