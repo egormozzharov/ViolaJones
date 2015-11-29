@@ -76,82 +76,80 @@ namespace FaceDetection
 				Color color = Color.BurlyWood;
 				Rectangle face = faces.First();
 				imageFrame.Draw(face, new Bgr(color));
+				imageFrame = imageFrame.Copy(face);
 
-				//draw face 
-				Point faceUpperLeftPoint = new Point(face.X, face.Y - 10);
-				Point faceUpperRightPoint = new Point(face.X + face.Width, face.Y - 10);
-				DrawPoint(faceUpperLeftPoint, imageFrame, (color));
-				DrawPoint(faceUpperRightPoint, imageFrame, (color));
-				imageFrame.Draw(new LineSegment2D(new Point(Convert.ToInt32(face.X + face.Width * 0.5), face.Y),
-					new Point(face.X + Convert.ToInt32(face.Width * 0.5), face.Y + face.Height)), new Bgr(color), 1);
+				imageFrame.Draw(new LineSegment2D(new Point(Convert.ToInt32(face.Width * 0.5), 0),
+					new Point(Convert.ToInt32(face.Width * 0.5),face.Height)), new Bgr(color), 1);
 
 
 
-				EyesDetection(imageFrame, frame, face);
-				MouthDetection(imageFrame, frame, face);
-				NoseDetection(imageFrame, frame, face);
+				EyesDetection(imageFrame);
+				MouthDetection(imageFrame);
+				NoseDetection(imageFrame);
 			}
 
 
 			fixedPicture.Image = imageFrame.Bitmap;
 		}
 
-		private void EyesDetection(Image<Bgr, Byte> imageFrame, Image<Bgr, byte> frame, Rectangle face)
+		private void EyesDetection(Image<Bgr, Byte> faceFrame)
 		{
 			Color color = Color.Aqua;
-			Rectangle eyesFrame = new Rectangle(face.X, face.Y, face.Width, Convert.ToInt32(face.Height * 0.7));
-			imageFrame.Draw(eyesFrame, new Bgr(color), 4);
+			Rectangle eyesFrame = new Rectangle(0, 0, faceFrame.Width, Convert.ToInt32(faceFrame.Height * 0.7));
+			faceFrame.Draw(eyesFrame, new Bgr(color), 4);
 
-			Image<Bgr, byte> eyesRegion = frame.Copy(eyesFrame);
+			Image<Bgr, byte> eyesRegion = faceFrame.Copy(eyesFrame);
+
 			IEnumerable<Rectangle> eyes = _eyeCascadeClassifier.DetectMultiScale(eyesRegion, 1.1, 2, Size.Empty);
 			IList<Point> eyesCenters = new List<Point>();
 			foreach (Rectangle eye in eyes)
 			{
-				Rectangle eyeAbsolute = new Rectangle(eye.X + face.X, eye.Y + face.Y, eye.Width, eye.Height);
-				imageFrame.Draw(eyeAbsolute, new Bgr(color));
+				Rectangle eyeAbsolute = new Rectangle(eye.X, eye.Y, eye.Width, eye.Height);
+				faceFrame.Draw(eyeAbsolute, new Bgr(color));
 				Point centerPoint = eyeAbsolute.Center();
 				eyesCenters.Add(centerPoint);
-				DrawPoint(centerPoint, imageFrame, (color));
+				DrawPoint(centerPoint, faceFrame, (color));
 			}
-			imageFrame.Draw(new LineSegment2D(eyesCenters[0], eyesCenters[1]), new Bgr(Color.Black), 1);
+			faceFrame.Draw(new LineSegment2D(eyesCenters[0], eyesCenters[1]), new Bgr(Color.Black), 1);
 			this.sideLongTiltLabel.Text = MathHelper.AngleWithHorizont(eyesCenters[0], eyesCenters[1]).ToString();
 		}
 
-		private void MouthDetection(Image<Bgr, Byte> imageFrame, Image<Bgr, byte> frame, Rectangle face)
+		private void MouthDetection(Image<Bgr, Byte> faceFrame)
 		{
 			Color color = Color.Red;
-			int mouthFrameHeight = Convert.ToInt32(face.Height * 0.3);
-			int mouthFrameY = face.Y + Convert.ToInt32(face.Height * 0.7);
-			Rectangle mouthFrame = new Rectangle(face.X, mouthFrameY, face.Width, mouthFrameHeight);
-			imageFrame.Draw(mouthFrame, new Bgr(color), 4);
+			int mouthFrameHeight = Convert.ToInt32(faceFrame.Height * 0.3);
+			int mouthFrameY = Convert.ToInt32(faceFrame.Height * 0.7);
+			Rectangle mouthFrame = new Rectangle(0, mouthFrameY, faceFrame.Width, mouthFrameHeight);
+			faceFrame.Draw(mouthFrame, new Bgr(color), 4);
 
-			Image<Bgr, byte> mouthRegion = frame.Copy(mouthFrame);
+
+			Image<Bgr, byte> mouthRegion = faceFrame.Copy(mouthFrame);
 			IEnumerable<Rectangle> mouths = _mouthCascadeClassifier.DetectMultiScale(mouthRegion, 1.1, 1, Size.Empty);
 			foreach (Rectangle mouth in mouths)
 			{
-				Rectangle mouthAbsolute = new Rectangle(mouth.X + face.X, mouth.Y + mouthFrameY, mouth.Width, mouth.Height);
-				imageFrame.Draw(mouthAbsolute, new Bgr(color));
+				Rectangle mouthAbsolute = new Rectangle(mouth.X, mouth.Y + mouthFrameY, mouth.Width, mouth.Height);
+				faceFrame.Draw(mouthAbsolute, new Bgr(color));
 				Point centerPoint = mouthAbsolute.Center();
-				DrawPoint(centerPoint, imageFrame, color);
+				DrawPoint(centerPoint, faceFrame, color);
 			}
 		}
 
-		private void NoseDetection(Image<Bgr, Byte> imageFrame, Image<Bgr, byte> frame, Rectangle face)
+		private void NoseDetection(Image<Bgr, Byte> faceFrame)
 		{
 			Color color = Color.BurlyWood;
-			int noseFrameHeight = Convert.ToInt32(face.Height*0.25);
-			int noseFrameY = face.Y + Convert.ToInt32(face.Height*0.5);
-			Rectangle noseFrame = new Rectangle(face.X, noseFrameY, face.Width, noseFrameHeight);
-			imageFrame.Draw(noseFrame, new Bgr(color), 4);
+			int noseFrameHeight = Convert.ToInt32(faceFrame.Height * 0.25);
+			int noseFrameY = Convert.ToInt32(faceFrame.Height * 0.5);
+			Rectangle noseFrame = new Rectangle(0, noseFrameY, faceFrame.Width, noseFrameHeight);
+			faceFrame.Draw(noseFrame, new Bgr(color), 4);
 
-			Image<Bgr, byte> noseRegion = frame.Copy(noseFrame);
+			Image<Bgr, byte> noseRegion = faceFrame.Copy(noseFrame);
 			IEnumerable<Rectangle> noses = _noseCascadeClassifier.DetectMultiScale(noseRegion, 1.1, 2, Size.Empty);
 			foreach (Rectangle nose in noses)
 			{
-				Rectangle noseAbsolute = new Rectangle(nose.X + face.X, nose.Y + noseFrameY, nose.Width, nose.Height);
-				imageFrame.Draw(noseAbsolute, new Bgr(color));
+				Rectangle noseAbsolute = new Rectangle(nose.X, nose.Y + noseFrameY, nose.Width, nose.Height);
+				faceFrame.Draw(noseAbsolute, new Bgr(color));
 				Point centerPoint = noseAbsolute.Center();
-				DrawPoint(centerPoint, imageFrame, color);
+				DrawPoint(centerPoint, faceFrame, color);
 			}
 		}
 
