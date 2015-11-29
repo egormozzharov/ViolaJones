@@ -36,6 +36,8 @@
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.catchPicture_button = new System.Windows.Forms.Button();
 			this.webCamPicture = new System.Windows.Forms.PictureBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.sideLongTiltLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
 			this.statusStrip1.SuspendLayout();
 			this.panel2.SuspendLayout();
@@ -80,7 +82,7 @@
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 529);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 560);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(963, 22);
 			this.statusStrip1.TabIndex = 8;
@@ -120,11 +122,30 @@
 			this.webCamPicture.TabIndex = 15;
 			this.webCamPicture.TabStop = false;
 			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(27, 535);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(89, 13);
+			this.label1.TabIndex = 16;
+			this.label1.Text = "Боковой наклон";
+			// 
+			// sideLongTiltLabel
+			// 
+			this.sideLongTiltLabel.AutoSize = true;
+			this.sideLongTiltLabel.Location = new System.Drawing.Point(122, 535);
+			this.sideLongTiltLabel.Name = "sideLongTiltLabel";
+			this.sideLongTiltLabel.Size = new System.Drawing.Size(0, 13);
+			this.sideLongTiltLabel.TabIndex = 17;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(963, 551);
+			this.ClientSize = new System.Drawing.Size(963, 582);
+			this.Controls.Add(this.sideLongTiltLabel);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.webCamPicture);
 			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.statusStrip1);
@@ -151,6 +172,8 @@
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.PictureBox webCamPicture;
 		private System.Windows.Forms.Button catchPicture_button;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label sideLongTiltLabel;
     }
 }
 
