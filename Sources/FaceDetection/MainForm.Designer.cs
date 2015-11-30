@@ -38,18 +38,14 @@
 			this.webCamPicture = new System.Windows.Forms.PictureBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.sideLongTiltLabel = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
 			this.dexpected = new System.Windows.Forms.Label();
 			this.deyes = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
 			this.Dkoef = new System.Windows.Forms.Label();
-			this.label5 = new System.Windows.Forms.Label();
-			this.firstParam = new System.Windows.Forms.TextBox();
-			this.secondParam = new System.Windows.Forms.TextBox();
-			this.label6 = new System.Windows.Forms.Label();
-			this.label7 = new System.Windows.Forms.Label();
 			this.noseCheck = new System.Windows.Forms.CheckBox();
+			this.label2 = new System.Windows.Forms.Label();
+			this.rotationAroundVerticalOx = new System.Windows.Forms.Label();
+			this.label3 = new System.Windows.Forms.Label();
+			this.ED = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
 			this.statusStrip1.SuspendLayout();
 			this.panel2.SuspendLayout();
@@ -151,24 +147,6 @@
 			this.sideLongTiltLabel.Size = new System.Drawing.Size(0, 13);
 			this.sideLongTiltLabel.TabIndex = 17;
 			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(230, 571);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(59, 13);
-			this.label2.TabIndex = 18;
-			this.label2.Text = "Dexpected";
-			// 
-			// label3
-			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(411, 571);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(37, 13);
-			this.label3.TabIndex = 19;
-			this.label3.Text = "Deyes";
-			// 
 			// dexpected
 			// 
 			this.dexpected.AutoSize = true;
@@ -180,19 +158,10 @@
 			// deyes
 			// 
 			this.deyes.AutoSize = true;
-			this.deyes.Location = new System.Drawing.Point(454, 571);
+			this.deyes.Location = new System.Drawing.Point(428, 571);
 			this.deyes.Name = "deyes";
 			this.deyes.Size = new System.Drawing.Size(0, 13);
 			this.deyes.TabIndex = 21;
-			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(555, 570);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(31, 13);
-			this.label4.TabIndex = 22;
-			this.label4.Text = "koeff";
 			// 
 			// Dkoef
 			// 
@@ -201,47 +170,6 @@
 			this.Dkoef.Name = "Dkoef";
 			this.Dkoef.Size = new System.Drawing.Size(0, 13);
 			this.Dkoef.TabIndex = 23;
-			// 
-			// label5
-			// 
-			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(28, 533);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(187, 13);
-			this.label5.TabIndex = 24;
-			this.label5.Text = "formula: (((dleft + dright)/first)/second);";
-			// 
-			// firstParam
-			// 
-			this.firstParam.Location = new System.Drawing.Point(299, 531);
-			this.firstParam.Name = "firstParam";
-			this.firstParam.Size = new System.Drawing.Size(100, 20);
-			this.firstParam.TabIndex = 25;
-			// 
-			// secondParam
-			// 
-			this.secondParam.Location = new System.Drawing.Point(502, 530);
-			this.secondParam.Name = "secondParam";
-			this.secondParam.Size = new System.Drawing.Size(100, 20);
-			this.secondParam.TabIndex = 26;
-			// 
-			// label6
-			// 
-			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(256, 533);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(23, 13);
-			this.label6.TabIndex = 27;
-			this.label6.Text = "first";
-			// 
-			// label7
-			// 
-			this.label7.AutoSize = true;
-			this.label7.Location = new System.Drawing.Point(454, 534);
-			this.label7.Name = "label7";
-			this.label7.Size = new System.Drawing.Size(42, 13);
-			this.label7.TabIndex = 28;
-			this.label7.Text = "second";
 			// 
 			// noseCheck
 			// 
@@ -255,23 +183,53 @@
 			this.noseCheck.Text = "noseCheck";
 			this.noseCheck.UseVisualStyleBackColor = true;
 			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(274, 571);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(137, 13);
+			this.label2.TabIndex = 30;
+			this.label2.Text = "Вокруг вертикальной оси";
+			// 
+			// rotationAroundVerticalOx
+			// 
+			this.rotationAroundVerticalOx.AutoSize = true;
+			this.rotationAroundVerticalOx.Location = new System.Drawing.Point(382, 571);
+			this.rotationAroundVerticalOx.Name = "rotationAroundVerticalOx";
+			this.rotationAroundVerticalOx.Size = new System.Drawing.Size(0, 13);
+			this.rotationAroundVerticalOx.TabIndex = 31;
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(524, 571);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(22, 13);
+			this.label3.TabIndex = 32;
+			this.label3.Text = "ED";
+			// 
+			// ED
+			// 
+			this.ED.AutoSize = true;
+			this.ED.Location = new System.Drawing.Point(566, 571);
+			this.ED.Name = "ED";
+			this.ED.Size = new System.Drawing.Size(0, 13);
+			this.ED.TabIndex = 33;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(963, 639);
+			this.Controls.Add(this.ED);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.rotationAroundVerticalOx);
+			this.Controls.Add(this.label2);
 			this.Controls.Add(this.noseCheck);
-			this.Controls.Add(this.label7);
-			this.Controls.Add(this.label6);
-			this.Controls.Add(this.secondParam);
-			this.Controls.Add(this.firstParam);
-			this.Controls.Add(this.label5);
 			this.Controls.Add(this.Dkoef);
-			this.Controls.Add(this.label4);
 			this.Controls.Add(this.deyes);
 			this.Controls.Add(this.dexpected);
-			this.Controls.Add(this.label3);
-			this.Controls.Add(this.label2);
 			this.Controls.Add(this.sideLongTiltLabel);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.webCamPicture);
@@ -302,18 +260,14 @@
 		private System.Windows.Forms.Button catchPicture_button;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label sideLongTiltLabel;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label dexpected;
 		private System.Windows.Forms.Label deyes;
-		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label Dkoef;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.TextBox firstParam;
-		private System.Windows.Forms.TextBox secondParam;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.CheckBox noseCheck;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label rotationAroundVerticalOx;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label ED;
     }
 }
 
