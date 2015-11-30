@@ -89,7 +89,7 @@ namespace FaceDetection
 				EyePair eyePair = GetEyePair(eyesCenters);
 				if (this.noseCheck.Checked)
 				{
-					IList<Point> nosePoints = NoseDetection(faceFrame, eyePair);
+					Point nosePoint = NoseDetection(faceFrame, eyePair);
 				}
 
 				//koeffs
@@ -132,10 +132,9 @@ namespace FaceDetection
 			foreach (Rectangle eye in eyes)
 			{
 				Rectangle eyeAbsolute = new Rectangle(eye.X, eye.Y, eye.Width, eye.Height);
-				faceFrame.Draw(eyeAbsolute, new Bgr(color));
 				Point centerPoint = eyeAbsolute.Center();
 				eyesCenters.Add(centerPoint);
-				DrawPoint(centerPoint, faceFrame, (color));
+				DrawDetectedObject(faceFrame, eyeAbsolute, color);
 			}
 			return eyesCenters;
 		}
@@ -156,37 +155,37 @@ namespace FaceDetection
 			{
 				Rectangle mouth = mouths.First();
 				Rectangle mouthAbsolute = new Rectangle(mouth.X, mouth.Y + mouthFrameY, mouth.Width, mouth.Height);
-				faceFrame.Draw(mouthAbsolute, new Bgr(color));
 				centerPoint = mouthAbsolute.Center();
-				DrawPoint(centerPoint, faceFrame, color);
+				DrawDetectedObject(faceFrame, mouthAbsolute, color);
 			}
 			return centerPoint;
 		}
 
-		private IList<Point> NoseDetection(Image<Bgr, Byte> faceFrame, EyePair eyePair)
+		private Point NoseDetection(Image<Bgr, Byte> faceFrame, EyePair eyePair)
 		{
-			Color color = Color.BurlyWood;
+			Color color = Color.Brown;
 			int noseFrameHeight = Convert.ToInt32(faceFrame.Height * 0.25);
 			int noseFrameY = Convert.ToInt32(faceFrame.Height * 0.5);
 			Rectangle noseFrame = new Rectangle(0, noseFrameY, faceFrame.Width, noseFrameHeight);
 			faceFrame.Draw(noseFrame, new Bgr(color), 4);
 
+
 			Image<Bgr, byte> noseRegion = faceFrame.Copy(noseFrame);
 			IEnumerable<Rectangle> noses = _noseCascadeClassifier.DetectMultiScale(noseRegion, 1.1, 2, Size.Empty);
-			IList<Point> centerPoints = new List<Point>();
+			IList<Rectangle> noseCandidates = new List<Rectangle>();
 			foreach (Rectangle nose in noses)
 			{
 				Rectangle noseAbsolute = new Rectangle(nose.X, nose.Y + noseFrameY, nose.Width, nose.Height);
 				Point noseCenter = noseAbsolute.Center();
-				centerPoints.Add(noseCenter);
-				if (noseCenter.X >= eyePair.LeftEye.X && noseCenter.X <= eyePair.RightEye.X)
+				if (NoseIsBeetweenTheEyes(noseAbsolute, noseCenter, eyePair))
 				{
-					color = Color.Brown;
-					faceFrame.Draw(noseAbsolute, new Bgr(color));
-					DrawPoint(noseAbsolute.Center(), faceFrame, color);
+					noseCandidates.Add(noseAbsolute);
 				}
 			}
-			return centerPoints;
+			
+			Rectangle detectedNose = GetNoseWithMaxSquare(noseCandidates);
+			DrawDetectedObject(faceFrame, detectedNose, color);
+			return detectedNose.Center();
 		}
 
 		#endregion
@@ -219,28 +218,23 @@ namespace FaceDetection
 			return result;
 		}
 
-		private void SkinMask(ref Image<Bgr, Byte> faceFrame)
+		private bool NoseIsBeetweenTheEyes(Rectangle noseAbsolute, Point noseCenter, EyePair eyePair)
 		{
-			Image<Bgr, byte> faceMask = faceFrame;
+			return noseCenter.X >= eyePair.LeftEye.X && noseCenter.X <= eyePair.RightEye.X
+				&& noseAbsolute.X >= eyePair.LeftEye.X && noseAbsolute.X <= eyePair.RightEye.X;
+		}
 
-			for (int j = 0; j < faceMask.Height; j++)
-			{
-				for (int i = 0; i < faceMask.Width; i++)
-				{
-					Bgr color = faceMask[j, i];
-					if ((color.Red > 1.04*color.Green)
-					    && (color.Green <= 8*color.Blue)
-					    && (color.Green > 0.9*color.Blue
-					    && (color.Red < 2.8*color.Green)))
-					{
-						faceMask[j, i] = new Bgr(Color.White);
-					}
-					else
-					{
-						faceMask[j, i] = new Bgr(Color.Black);
-					}
-				}
-			}
-		}	
+		private Rectangle GetNoseWithMaxSquare(IList<Rectangle> noseCandidates)
+		{
+			int maxSquare = noseCandidates.Max(n => n.Square());
+			return noseCandidates.First(n => n.Square() == maxSquare);
+		}
+
+		private void DrawDetectedObject(Image<Bgr, Byte> faceFrame, Rectangle detectedObject, Color color)
+		{
+			faceFrame.Draw(detectedObject, new Bgr(color));
+			DrawPoint(detectedObject.Center(), faceFrame, color);
+		}
+			
 	}
 }
