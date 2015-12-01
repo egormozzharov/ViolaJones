@@ -67,39 +67,48 @@ namespace FaceDetection
 		private void Detect_buttonClick(object sender, EventArgs e)
 		{
 			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)this.fixedPicture.Image);
-			IEnumerable<Rectangle> faces = _faceCascadeClassifier.DetectMultiScale(imageFrame, 1.1, 1, new Size(250, 250));
-			if (faces.Any())
+			try
 			{
-				Rectangle face = faces.First();
-				Image<Bgr, Byte> faceFrame = imageFrame.Copy(face);
-				imageFrame = faceFrame;
+				IEnumerable<Rectangle> faces = _faceCascadeClassifier.DetectMultiScale(imageFrame, 1.1, 1, new Size(250, 250));
+				if (faces.Any())
+				{
+					Rectangle face = faces.First();
+					Image<Bgr, Byte> faceFrame = imageFrame.Copy(face);
+					imageFrame = faceFrame;
 
-				IList<Rectangle> detectedEyes = EyesDetection(faceFrame);
-				EyePair eyePair = GetEyeEdgesPair(detectedEyes);
-				Point mouthCenterPoint = MouthDetection(faceFrame);
-				Point nosePoint = NoseDetection(faceFrame, eyePair);
+					IList<Rectangle> detectedEyes = EyesDetection(faceFrame);
+					EyePair eyePair = GetEyeEdgesPair(detectedEyes);
+					Point mouthCenterPoint = MouthDetection(faceFrame);
+					Point nosePoint = NoseDetection(faceFrame, eyePair);
 
-				LineSegment2D lineBetweenEyes	= new LineSegment2D(eyePair.LeftEye, eyePair.RightEye);
-				LineSegment2D leftEyeToMouth = new LineSegment2D(eyePair.LeftEye, mouthCenterPoint);
-				LineSegment2D rightEyeToMouth = new LineSegment2D(eyePair.RightEye, mouthCenterPoint);
+					LineSegment2D lineBetweenEyes = new LineSegment2D(eyePair.LeftEye, eyePair.RightEye);
+					LineSegment2D leftEyeToMouth = new LineSegment2D(eyePair.LeftEye, mouthCenterPoint);
+					LineSegment2D rightEyeToMouth = new LineSegment2D(eyePair.RightEye, mouthCenterPoint);
 
-				Point perpendicularPointFromNose = MathHelper.GetPerpendicularPoint(eyePair.LeftEye, eyePair.RightEye, nosePoint);
-				Point pointBetweenEyes = lineBetweenEyes.MidPoint();
-				
-				//koeffs
-				this.sideLongTiltLabel.Text = GetSideLongTilt(eyePair).ToString();
-				this.rotationAroundVerticalOx.Text = GetRotationAroundVertical(pointBetweenEyes, perpendicularPointFromNose, lineBetweenEyes).ToString();
-				this.backForthAngle.Text = GetBackForthTilt(mouthCenterPoint, perpendicularPointFromNose, lineBetweenEyes).ToString();
-				//drawing
-				faceFrame.Draw(lineBetweenEyes, new Bgr(Color.Black), 1);
-				faceFrame.Draw(leftEyeToMouth, new Bgr(Color.Black), 1);
-				faceFrame.Draw(rightEyeToMouth, new Bgr(Color.Black), 1);
-				//faceFrame.Draw(new LineSegment2D(mouthCenterPoint, perpendicularPointFromNose), new Bgr(Color.BlueViolet), 1);
-				//perpendicular line from nose
-				faceFrame.Draw(new LineSegment2D(nosePoint, perpendicularPointFromNose), new Bgr(Color.Black), 1);
-				DrawPoint(pointBetweenEyes, imageFrame, Color.Red);
+					Point perpendicularPointFromNose = MathHelper.GetPerpendicularPoint(eyePair.LeftEye, eyePair.RightEye, nosePoint);
+					Point pointBetweenEyes = lineBetweenEyes.MidPoint();
+
+					//koeffs
+					this.sideLongTiltLabel.Text = GetSideLongTilt(eyePair).ToString();
+					this.rotationAroundVerticalOx.Text =
+						Math.Abs(180 - GetRotationAroundVertical(pointBetweenEyes, perpendicularPointFromNose, lineBetweenEyes)).ToString();
+					this.backForthAngle.Text =
+						GetBackForthTilt(mouthCenterPoint, perpendicularPointFromNose, lineBetweenEyes).ToString();
+					//drawing
+					faceFrame.Draw(lineBetweenEyes, new Bgr(Color.Black), 1);
+					faceFrame.Draw(leftEyeToMouth, new Bgr(Color.Black), 1);
+					faceFrame.Draw(rightEyeToMouth, new Bgr(Color.Black), 1);
+					faceFrame.Draw(new LineSegment2D(mouthCenterPoint, perpendicularPointFromNose), new Bgr(Color.BlueViolet), 1);
+					//perpendicular line from nose
+					faceFrame.Draw(new LineSegment2D(nosePoint, perpendicularPointFromNose), new Bgr(Color.Black), 1);
+					DrawPoint(pointBetweenEyes, imageFrame, Color.Red);
+				}
+				fixedPicture.Image = imageFrame.Bitmap;
 			}
-			fixedPicture.Image = imageFrame.Bitmap;
+			catch (Exception ex)
+			{
+				MessageBox.Show("Unable to find face");
+			}
 		}
 
 		#endregion EventActions
@@ -110,7 +119,7 @@ namespace FaceDetection
 			LineSegment2D FD = new LineSegment2D(mouthCenterPoint, perpendicularPointFromNose);
 			LineSegment2D AB = lineBetweenEyes;
 			double r = Math.Abs(FD.Length)/Math.Abs(AB.Length);
-			double expression = (r*Math.Cos(-0.24))/0.74;
+			double expression = (r*Math.Cos(-0.24))/0.92;
 			result = Math.Acos(expression) - 0.24;
 			double degrees = MathHelper.RadianToDegree(result);
 			return degrees;
@@ -146,15 +155,15 @@ namespace FaceDetection
 
 			Image<Bgr, byte> mouthRegion = faceFrame.Copy(mouthFrame);
 			IEnumerable<Rectangle> mouths = _mouthCascadeClassifier.DetectMultiScale(mouthRegion, 1.1, 1, Size.Empty);
-			Point centerPoint = new Point();
-			if (mouths.Any())
+			IList<Rectangle> mouthCandidates = new List<Rectangle>();
+			foreach(Rectangle mouth in mouths)
 			{
-				Rectangle mouth = mouths.First();
 				Rectangle mouthAbsolute = new Rectangle(mouth.X, mouth.Y + mouthFrameY, mouth.Width, mouth.Height);
-				centerPoint = mouthAbsolute.Center();
-				DrawDetectedObject(faceFrame, mouthAbsolute, color);
+				mouthCandidates.Add(mouthAbsolute);
 			}
-			return centerPoint;
+			Rectangle detectedMouht = mouthCandidates.First();
+			DrawDetectedObject(faceFrame, detectedMouht, color);
+			return detectedMouht.Center();
 		}
 
 		private Point NoseDetection(Image<Bgr, Byte> faceFrame, EyePair eyePair)
@@ -253,7 +262,7 @@ namespace FaceDetection
 		private void DrawPoint(Point centerPoint, Image<Bgr, Byte> imageFrame, Color color)
 		{
 			imageFrame.Draw(new CircleF(centerPoint, 2), new Bgr(color));
-			DrawCoordinates(centerPoint, imageFrame);
+			//DrawCoordinates(centerPoint, imageFrame);
 		}
 
 		private void DrawCoordinates(Point centerPoint, Image<Bgr, Byte> imageFrame)
