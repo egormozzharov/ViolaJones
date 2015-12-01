@@ -45,7 +45,7 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.rotationAroundVerticalOx = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
-			this.ED = new System.Windows.Forms.Label();
+			this.backForthAngle = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
 			this.statusStrip1.SuspendLayout();
 			this.panel2.SuspendLayout();
@@ -203,26 +203,28 @@
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(524, 571);
+			this.label3.Location = new System.Drawing.Point(491, 571);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(22, 13);
+			this.label3.Size = new System.Drawing.Size(76, 13);
 			this.label3.TabIndex = 32;
-			this.label3.Text = "ED";
+			this.label3.Text = "ВпередНазад";
 			// 
-			// ED
+			// backForthAngle
 			// 
-			this.ED.AutoSize = true;
-			this.ED.Location = new System.Drawing.Point(566, 571);
-			this.ED.Name = "ED";
-			this.ED.Size = new System.Drawing.Size(0, 13);
-			this.ED.TabIndex = 33;
+			this.backForthAngle.AutoSize = true;
+			this.backForthAngle.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.backForthAngle.Location = new System.Drawing.Point(585, 571);
+			this.backForthAngle.Name = "backForthAngle";
+			this.backForthAngle.Size = new System.Drawing.Size(0, 13);
+			this.backForthAngle.TabIndex = 33;
+			this.backForthAngle.UseMnemonic = false;
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(963, 639);
-			this.Controls.Add(this.ED);
+			this.Controls.Add(this.backForthAngle);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.rotationAroundVerticalOx);
 			this.Controls.Add(this.label2);
@@ -267,7 +269,7 @@
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label rotationAroundVerticalOx;
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Label ED;
+		private System.Windows.Forms.Label backForthAngle;
     }
 }
 

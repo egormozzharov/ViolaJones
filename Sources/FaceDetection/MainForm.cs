@@ -74,32 +74,29 @@ namespace FaceDetection
 				Image<Bgr, Byte> faceFrame = imageFrame.Copy(face);
 				imageFrame = faceFrame;
 
-				EyePair eyePair = GetEyePair(EyesDetection(faceFrame));
-				Point mouthPoint = MouthDetection(faceFrame);
+				IList<Rectangle> detectedEyes = EyesDetection(faceFrame);
+				EyePair eyePair = GetEyeEdgesPair(detectedEyes);
+				Point mouthCenterPoint = MouthDetection(faceFrame);
 				Point nosePoint = NoseDetection(faceFrame, eyePair);
-				LineSegment2D lineBetweenEyes	= new LineSegment2D(eyePair.LeftEye, eyePair.RightEye);
-				LineSegment2D leftEyeToMouth = new LineSegment2D(eyePair.LeftEye, mouthPoint);
-				LineSegment2D rightEyeToMouth = new LineSegment2D(eyePair.RightEye, mouthPoint);
 
+				LineSegment2D lineBetweenEyes	= new LineSegment2D(eyePair.LeftEye, eyePair.RightEye);
+				LineSegment2D leftEyeToMouth = new LineSegment2D(eyePair.LeftEye, mouthCenterPoint);
+				LineSegment2D rightEyeToMouth = new LineSegment2D(eyePair.RightEye, mouthCenterPoint);
 
 				Point perpendicularPointFromNose = MathHelper.GetPerpendicularPoint(eyePair.LeftEye, eyePair.RightEye, nosePoint);
 				Point pointBetweenEyes = lineBetweenEyes.MidPoint();
-
+				
 				//koeffs
 				this.sideLongTiltLabel.Text = GetSideLongTilt(eyePair).ToString();
-				double ed;
-				this.rotationAroundVerticalOx.Text = GetRotationAroundVertical(
-					pointBetweenEyes, perpendicularPointFromNose, out ed).ToString();
-				this.ED.Text = ed.ToString();
+				this.rotationAroundVerticalOx.Text = GetRotationAroundVertical(pointBetweenEyes, perpendicularPointFromNose, lineBetweenEyes).ToString();
+				this.backForthAngle.Text = GetBackForthTilt(mouthCenterPoint, perpendicularPointFromNose, lineBetweenEyes).ToString();
 				//drawing
 				faceFrame.Draw(lineBetweenEyes, new Bgr(Color.Black), 1);
 				faceFrame.Draw(leftEyeToMouth, new Bgr(Color.Black), 1);
 				faceFrame.Draw(rightEyeToMouth, new Bgr(Color.Black), 1);
+				//faceFrame.Draw(new LineSegment2D(mouthCenterPoint, perpendicularPointFromNose), new Bgr(Color.BlueViolet), 1);
 				//perpendicular line from nose
 				faceFrame.Draw(new LineSegment2D(nosePoint, perpendicularPointFromNose), new Bgr(Color.Black), 1);
-				//middle line
-				faceFrame.Draw(new LineSegment2D(new Point(Convert.ToInt32(face.Width * 0.5), 0),
-					new Point(Convert.ToInt32(face.Width * 0.5), face.Height)), new Bgr(Color.BurlyWood), 1);
 				DrawPoint(pointBetweenEyes, imageFrame, Color.Red);
 			}
 			fixedPicture.Image = imageFrame.Bitmap;
@@ -107,8 +104,19 @@ namespace FaceDetection
 
 		#endregion EventActions
 
+		private double GetBackForthTilt(Point mouthCenterPoint, Point perpendicularPointFromNose, LineSegment2D lineBetweenEyes)
+		{
+			double result;
+			LineSegment2D FD = new LineSegment2D(mouthCenterPoint, perpendicularPointFromNose);
+			LineSegment2D AB = lineBetweenEyes;
+			double r = Math.Abs(FD.Length)/Math.Abs(AB.Length);
+			double expression = (r*Math.Cos(-0.24))/0.74;
+			result = Math.Acos(expression) - 0.24;
+			double degrees = MathHelper.RadianToDegree(result);
+			return degrees;
+		}
 
-		private IList<Point> EyesDetection(Image<Bgr, Byte> faceFrame)
+		private IList<Rectangle> EyesDetection(Image<Bgr, Byte> faceFrame)
 		{
 			Color color = Color.Aqua;
 			Rectangle eyesFrame = new Rectangle(0, 0, faceFrame.Width, Convert.ToInt32(faceFrame.Height * 0.7));
@@ -117,15 +125,14 @@ namespace FaceDetection
 			Image<Bgr, byte> eyesRegion = faceFrame.Copy(eyesFrame);
 
 			IEnumerable<Rectangle> eyes = _eyeCascadeClassifier.DetectMultiScale(eyesRegion, 1.1, 2, Size.Empty);
-			IList<Point> eyesCenters = new List<Point>();
+			IList<Rectangle> eyesDetected = new List<Rectangle>();
 			foreach (Rectangle eye in eyes)
 			{
 				Rectangle eyeAbsolute = new Rectangle(eye.X, eye.Y, eye.Width, eye.Height);
-				Point centerPoint = eyeAbsolute.Center();
-				eyesCenters.Add(centerPoint);
+				eyesDetected.Add(eyeAbsolute);
 				DrawDetectedObject(faceFrame, eyeAbsolute, color);
 			}
-			return eyesCenters;
+			return eyesDetected;
 		}
 
 		private Point MouthDetection(Image<Bgr, Byte> faceFrame)
@@ -193,6 +200,22 @@ namespace FaceDetection
 			return result;
 		}
 
+		private EyePair GetEyeEdgesPair(IList<Rectangle> eyesRectangles)
+		{
+			EyePair result = new EyePair();
+			if (eyesRectangles[0].X < eyesRectangles[1].X)
+			{
+				result.LeftEye = new Point(eyesRectangles[0].X, eyesRectangles[0].Y + eyesRectangles[0].Height/2);
+				result.RightEye = new Point(eyesRectangles[1].X + eyesRectangles[1].Width, eyesRectangles[1].Y + eyesRectangles[1].Height / 2);
+			}
+			else
+			{
+				result.LeftEye = new Point(eyesRectangles[1].X, eyesRectangles[1].Y + eyesRectangles[1].Height / 2);
+				result.RightEye = new Point(eyesRectangles[0].X + eyesRectangles[0].Width, eyesRectangles[0].Y + eyesRectangles[0].Height / 2);
+			}
+			return result;
+		}
+
 		private bool NoseIsBeetweenTheEyes(Rectangle noseAbsolute, Point noseCenter, EyePair eyePair)
 		{
 			return noseCenter.X >= eyePair.LeftEye.X && noseCenter.X <= eyePair.RightEye.X
@@ -210,11 +233,12 @@ namespace FaceDetection
 			return MathHelper.AngleWithHorizont(eyePair.LeftEye, eyePair.RightEye);
 		}
 
-		private double GetRotationAroundVertical(Point e, Point d, out double ED)
+		private double GetRotationAroundVertical(Point e, Point d, LineSegment2D lineBetweenEyes)
 		{
 			LineSegment2D EDSegment = new LineSegment2D(e, d);
-			ED = EDSegment.Length;
-			return MathHelper.RadianToDegree(-(EDSegment.Length/0.3));
+			double radians = -(EDSegment.Length/lineBetweenEyes.Length/0.55);
+			double result = MathHelper.RadianToDegree(radians);
+			return result;
 		}
 
 
