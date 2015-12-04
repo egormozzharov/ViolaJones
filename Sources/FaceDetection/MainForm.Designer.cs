@@ -31,8 +31,6 @@
 			this.WebCamCapture = new WebCam_Capture.WebCamCapture();
 			this.button1 = new System.Windows.Forms.Button();
 			this.fixedPicture = new System.Windows.Forms.PictureBox();
-			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-			this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.catchPicture_button = new System.Windows.Forms.Button();
 			this.webCamPicture = new System.Windows.Forms.PictureBox();
@@ -41,15 +39,17 @@
 			this.dexpected = new System.Windows.Forms.Label();
 			this.deyes = new System.Windows.Forms.Label();
 			this.Dkoef = new System.Windows.Forms.Label();
-			this.noseCheck = new System.Windows.Forms.CheckBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.rotationAroundVerticalOx = new System.Windows.Forms.Label();
+			this.rotationAroundVerticalOxLabel = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
-			this.backForthAngle = new System.Windows.Forms.Label();
+			this.backForthAngleLabel = new System.Windows.Forms.Label();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.ParentPanel = new System.Windows.Forms.Panel();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
-			this.statusStrip1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.webCamPicture)).BeginInit();
+			this.panel1.SuspendLayout();
+			this.ParentPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// WebCamCapture
@@ -79,34 +79,18 @@
 			// 
 			this.fixedPicture.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.fixedPicture.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.fixedPicture.Location = new System.Drawing.Point(481, 22);
+			this.fixedPicture.Location = new System.Drawing.Point(481, 10);
 			this.fixedPicture.Name = "fixedPicture";
 			this.fixedPicture.Size = new System.Drawing.Size(448, 381);
 			this.fixedPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.fixedPicture.TabIndex = 4;
 			this.fixedPicture.TabStop = false;
 			// 
-			// statusStrip1
-			// 
-			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 617);
-			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(963, 22);
-			this.statusStrip1.TabIndex = 8;
-			this.statusStrip1.Text = "statusStrip1";
-			// 
-			// toolStripStatusLabel1
-			// 
-			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-			this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
-			this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
-			// 
 			// panel2
 			// 
 			this.panel2.Controls.Add(this.catchPicture_button);
 			this.panel2.Controls.Add(this.button1);
-			this.panel2.Location = new System.Drawing.Point(12, 428);
+			this.panel2.Location = new System.Drawing.Point(18, 407);
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(917, 82);
 			this.panel2.TabIndex = 14;
@@ -124,7 +108,7 @@
 			// webCamPicture
 			// 
 			this.webCamPicture.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.webCamPicture.Location = new System.Drawing.Point(12, 22);
+			this.webCamPicture.Location = new System.Drawing.Point(15, 10);
 			this.webCamPicture.Name = "webCamPicture";
 			this.webCamPicture.Size = new System.Drawing.Size(447, 381);
 			this.webCamPicture.TabIndex = 15;
@@ -133,7 +117,7 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(23, 571);
+			this.label1.Location = new System.Drawing.Point(13, 26);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(89, 13);
 			this.label1.TabIndex = 16;
@@ -142,7 +126,7 @@
 			// sideLongTiltLabel
 			// 
 			this.sideLongTiltLabel.AutoSize = true;
-			this.sideLongTiltLabel.Location = new System.Drawing.Point(118, 571);
+			this.sideLongTiltLabel.Location = new System.Drawing.Point(108, 29);
 			this.sideLongTiltLabel.Name = "sideLongTiltLabel";
 			this.sideLongTiltLabel.Size = new System.Drawing.Size(0, 13);
 			this.sideLongTiltLabel.TabIndex = 17;
@@ -171,81 +155,85 @@
 			this.Dkoef.Size = new System.Drawing.Size(0, 13);
 			this.Dkoef.TabIndex = 23;
 			// 
-			// noseCheck
-			// 
-			this.noseCheck.AutoSize = true;
-			this.noseCheck.Checked = true;
-			this.noseCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.noseCheck.Location = new System.Drawing.Point(734, 534);
-			this.noseCheck.Name = "noseCheck";
-			this.noseCheck.Size = new System.Drawing.Size(80, 17);
-			this.noseCheck.TabIndex = 29;
-			this.noseCheck.Text = "noseCheck";
-			this.noseCheck.UseVisualStyleBackColor = true;
-			// 
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(274, 571);
+			this.label2.Location = new System.Drawing.Point(247, 29);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(137, 13);
 			this.label2.TabIndex = 30;
 			this.label2.Text = "Вокруг вертикальной оси";
 			// 
-			// rotationAroundVerticalOx
+			// rotationAroundVerticalOxLabel
 			// 
-			this.rotationAroundVerticalOx.AutoSize = true;
-			this.rotationAroundVerticalOx.Location = new System.Drawing.Point(382, 571);
-			this.rotationAroundVerticalOx.Name = "rotationAroundVerticalOx";
-			this.rotationAroundVerticalOx.Size = new System.Drawing.Size(0, 13);
-			this.rotationAroundVerticalOx.TabIndex = 31;
+			this.rotationAroundVerticalOxLabel.AutoSize = true;
+			this.rotationAroundVerticalOxLabel.Location = new System.Drawing.Point(398, 29);
+			this.rotationAroundVerticalOxLabel.Name = "rotationAroundVerticalOxLabel";
+			this.rotationAroundVerticalOxLabel.Size = new System.Drawing.Size(0, 13);
+			this.rotationAroundVerticalOxLabel.TabIndex = 31;
 			// 
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(491, 571);
+			this.label3.Location = new System.Drawing.Point(623, 29);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(76, 13);
 			this.label3.TabIndex = 32;
 			this.label3.Text = "ВпередНазад";
 			// 
-			// backForthAngle
+			// backForthAngleLabel
 			// 
-			this.backForthAngle.AutoSize = true;
-			this.backForthAngle.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.backForthAngle.Location = new System.Drawing.Point(585, 571);
-			this.backForthAngle.Name = "backForthAngle";
-			this.backForthAngle.Size = new System.Drawing.Size(0, 13);
-			this.backForthAngle.TabIndex = 33;
-			this.backForthAngle.UseMnemonic = false;
+			this.backForthAngleLabel.AutoSize = true;
+			this.backForthAngleLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.backForthAngleLabel.Location = new System.Drawing.Point(725, 29);
+			this.backForthAngleLabel.Name = "backForthAngleLabel";
+			this.backForthAngleLabel.Size = new System.Drawing.Size(0, 13);
+			this.backForthAngleLabel.TabIndex = 33;
+			this.backForthAngleLabel.UseMnemonic = false;
+			// 
+			// panel1
+			// 
+			this.panel1.Controls.Add(this.rotationAroundVerticalOxLabel);
+			this.panel1.Controls.Add(this.backForthAngleLabel);
+			this.panel1.Controls.Add(this.label2);
+			this.panel1.Controls.Add(this.label3);
+			this.panel1.Controls.Add(this.label1);
+			this.panel1.Controls.Add(this.sideLongTiltLabel);
+			this.panel1.Location = new System.Drawing.Point(18, 501);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(910, 55);
+			this.panel1.TabIndex = 34;
+			// 
+			// ParentPanel
+			// 
+			this.ParentPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+			this.ParentPanel.Controls.Add(this.panel1);
+			this.ParentPanel.Controls.Add(this.fixedPicture);
+			this.ParentPanel.Controls.Add(this.webCamPicture);
+			this.ParentPanel.Controls.Add(this.panel2);
+			this.ParentPanel.Location = new System.Drawing.Point(12, 12);
+			this.ParentPanel.MinimumSize = new System.Drawing.Size(400, 400);
+			this.ParentPanel.Name = "ParentPanel";
+			this.ParentPanel.Size = new System.Drawing.Size(938, 572);
+			this.ParentPanel.TabIndex = 35;
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(963, 639);
-			this.Controls.Add(this.backForthAngle);
-			this.Controls.Add(this.label3);
-			this.Controls.Add(this.rotationAroundVerticalOx);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.noseCheck);
 			this.Controls.Add(this.Dkoef);
 			this.Controls.Add(this.deyes);
 			this.Controls.Add(this.dexpected);
-			this.Controls.Add(this.sideLongTiltLabel);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.webCamPicture);
-			this.Controls.Add(this.panel2);
-			this.Controls.Add(this.statusStrip1);
-			this.Controls.Add(this.fixedPicture);
+			this.Controls.Add(this.ParentPanel);
 			this.Name = "MainForm";
 			this.Text = "Eye finder";
-			this.Load += new System.EventHandler(this.MainForm_Load);
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).EndInit();
-			this.statusStrip1.ResumeLayout(false);
-			this.statusStrip1.PerformLayout();
 			this.panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.webCamPicture)).EndInit();
+			this.panel1.ResumeLayout(false);
+			this.panel1.PerformLayout();
+			this.ParentPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -255,8 +243,6 @@
 
         private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.PictureBox fixedPicture;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.PictureBox webCamPicture;
 		private System.Windows.Forms.Button catchPicture_button;
@@ -265,11 +251,12 @@
 		private System.Windows.Forms.Label dexpected;
 		private System.Windows.Forms.Label deyes;
 		private System.Windows.Forms.Label Dkoef;
-		private System.Windows.Forms.CheckBox noseCheck;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label rotationAroundVerticalOx;
+		private System.Windows.Forms.Label rotationAroundVerticalOxLabel;
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Label backForthAngle;
+		private System.Windows.Forms.Label backForthAngleLabel;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.Panel ParentPanel;
     }
 }
 
