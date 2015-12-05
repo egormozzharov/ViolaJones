@@ -45,6 +45,7 @@
 			this.backForthAngleLabel = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.ParentPanel = new System.Windows.Forms.Panel();
+			this.calibrate_btn = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.webCamPicture)).BeginInit();
@@ -217,11 +218,22 @@
 			this.ParentPanel.Size = new System.Drawing.Size(938, 572);
 			this.ParentPanel.TabIndex = 35;
 			// 
+			// calibrate_btn
+			// 
+			this.calibrate_btn.Location = new System.Drawing.Point(447, 590);
+			this.calibrate_btn.Name = "calibrate_btn";
+			this.calibrate_btn.Size = new System.Drawing.Size(86, 37);
+			this.calibrate_btn.TabIndex = 36;
+			this.calibrate_btn.Text = "Calibrate";
+			this.calibrate_btn.UseVisualStyleBackColor = true;
+			this.calibrate_btn.Click += new System.EventHandler(this.Calibrate_btn_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(963, 639);
+			this.Controls.Add(this.calibrate_btn);
 			this.Controls.Add(this.Dkoef);
 			this.Controls.Add(this.deyes);
 			this.Controls.Add(this.dexpected);
@@ -257,6 +269,7 @@
 		private System.Windows.Forms.Label backForthAngleLabel;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Panel ParentPanel;
+		private System.Windows.Forms.Button calibrate_btn;
     }
 }
 

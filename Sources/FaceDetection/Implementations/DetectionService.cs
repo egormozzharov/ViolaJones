@@ -51,7 +51,6 @@ namespace FaceDetection
 				mouthCandidates.Add(mouthAbsolute);
 			}
 			Rectangle detectedMouht = mouthCandidates.First();
-			//DrawDetectedObject(faceFrame, detectedMouht, color);
 			return detectedMouht.Center();
 		}
 
@@ -77,7 +76,6 @@ namespace FaceDetection
 				}
 			}
 			Rectangle detectedNose = GetNoseWithMaxSquare(noseCandidates);
-			//DrawDetectedObject(faceFrame, detectedNose, color);
 			return detectedNose.Center();
 		}
 
@@ -95,7 +93,6 @@ namespace FaceDetection
 			{
 				Rectangle eyeAbsolute = new Rectangle(eye.X, eye.Y, eye.Width, eye.Height);
 				eyesDetected.Add(eyeAbsolute);
-				DrawingHelper.DrawDetectedObject(faceFrame, eyeAbsolute, color);
 			}
 			return eyesDetected;
 		}

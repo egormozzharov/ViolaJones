@@ -89,6 +89,8 @@
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Interfaces\ICalibrationService.cs" />
     <Compile Include="Models\CalibrationItem.cs" />
+    <Compile Include="Models\DetectionResult.cs" />
+    <Compile Include="Models\DetectionStatus.cs" />
     <Compile Include="Models\EyePair.cs" />
     <Compile Include="Helpers\FaceRotation.cs" />
     <Compile Include="Interfaces\IDetectionService.cs" />
