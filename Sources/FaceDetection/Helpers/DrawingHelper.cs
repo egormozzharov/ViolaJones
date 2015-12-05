@@ -29,22 +29,27 @@ namespace FaceDetection.Helpers
 					FontFace.HersheyComplex, 0.3, new Bgr(Color.Black));
 		}
 
-		public static void DrawLines(IEnumerable<LineSegment2D> lines, Image<Bgr, Byte> faceFrame)
+		public static void DrawLines(IEnumerable<LineSegment2D> lines, Image<Bgr, Byte> frame)
 		{
 			foreach (LineSegment2D line in lines)
 			{
-				faceFrame.Draw(line, new Bgr(Color.Black), 1);
+				frame.Draw(line, new Bgr(Color.Black), 1);
 			}
 		}
 
-		public static void DrawDetectedObjects(Image<Bgr, Byte> faceFrame, DetectionResult detectionResult)
+		public static void DrawLine(LineSegment2D line, Image<Bgr, Byte> frame, Color color)
+		{
+			frame.Draw(line, new Bgr(color), 1);
+		}
+
+		public static void DrawDetectedObjects(Image<Bgr, Byte> frame, DetectionResult detectionResult)
 		{
 			detectionResult.DetectedEyes.ToList().ForEach(eye =>
 			{
-				DrawDetectedObject(faceFrame, eye, Color.Blue);
+				DrawDetectedObject(frame, eye, Color.Blue);
 			});
-			DrawPoint(detectionResult.MouthCenterPoint, faceFrame, Color.Red);
-			DrawPoint(detectionResult.NosePoint, faceFrame, Color.Brown);
+			DrawPoint(detectionResult.MouthCenterPoint, frame, Color.Red);
+			DrawPoint(detectionResult.NosePoint, frame, Color.Brown);
 		}
 
 		public static Image<Bgr, Byte> GetImageFrame(Image<Bgr, Byte> imageFrame, Rectangle detectedFace)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using Emgu.CV.Structure;
 
 namespace FaceDetection
 {
@@ -16,7 +17,7 @@ namespace FaceDetection
 			if (degree < 0)
 				degree = 360 + degree;
 
-			return degree % 180;
+			return degree%360;
 		}
 
 		public static double LineLength(Point start, Point end)
@@ -37,6 +38,16 @@ namespace FaceDetection
 			int y4 = y3 + Convert.ToInt32(k * (x2 - x1));
 			Point p4 = new Point(x4, y4);
 			return p4;
+		}
+
+		public static double AngleBetweenLines(LineSegment2D line1, LineSegment2D line2)
+		{
+			Point p1 = line1.P1;
+			Point p2 = line1.P2;
+			Point p3 = line2.P1;
+			Point p4 = line2.P2;
+			double angleRad = Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) - Math.Atan2(p4.Y - p3.Y, p4.X - p3.X);
+			return RadianToDegree(angleRad);
 		}
 	}
 }
