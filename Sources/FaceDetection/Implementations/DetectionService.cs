@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using FaceDetection.Interfaces;
+using FaceDetection.Models;
 
 namespace FaceDetection
 {
@@ -26,6 +28,34 @@ namespace FaceDetection
 			_mouthCascadeClassifier = new CascadeClassifier(mouthHaarCascadePath);
 			_noseCascadeClassifier = new CascadeClassifier(noseHaarCascadePath);
 			_faceCascadeClassifier = new CascadeClassifier(faceHaarCascadePath);
+		}
+
+		public DetectionResult GetDetectionResult(Image<Bgr, Byte> imageFrame)
+		{
+			DetectionResult result = new DetectionResult() { Status = DetectionStatus.Success };
+			try
+			{
+				Rectangle face = GetFace(imageFrame);
+				Image<Bgr, Byte> faceFrame = imageFrame.Copy(face);
+				IList<Rectangle> detectedEyes = GetEyes(faceFrame);
+				EyePair eyeEdgesPair = GetEyeEdgesPair(detectedEyes);
+				EyePair eyeCentersPair = GetEyeCentersPair(detectedEyes.Select(eye => eye.Center()).ToList());
+				Point mouthCenterPoint = GetMouth(faceFrame);
+				Point nosePoint = GetNose(faceFrame, eyeEdgesPair);
+
+				result.Face = face;
+				result.DetectedEyes = detectedEyes;
+				result.EyeEdgesPair = eyeEdgesPair;
+				result.EyeCentersPair = eyeCentersPair;
+				result.MouthCenterPoint = mouthCenterPoint;
+				result.NosePoint = nosePoint;
+			}
+			catch (Exception)
+			{
+				result.Status = DetectionStatus.Error;
+				MessageBox.Show("Unable to find face");
+			}
+			return result;
 		}
 
 		public Rectangle GetFace(Image<Bgr, Byte> imageFrame)
@@ -108,6 +138,38 @@ namespace FaceDetection
 		{
 			int maxSquare = noseCandidates.Max(n => n.Square());
 			return noseCandidates.First(n => n.Square() == maxSquare);
+		}
+
+		private EyePair GetEyeCentersPair(IList<Point> eyesCenters)
+		{
+			EyePair result = new EyePair();
+			if (eyesCenters[0].X < eyesCenters[1].X)
+			{
+				result.LeftEye = eyesCenters[0];
+				result.RightEye = eyesCenters[1];
+			}
+			else
+			{
+				result.LeftEye = eyesCenters[1];
+				result.RightEye = eyesCenters[0];
+			}
+			return result;
+		}
+
+		private EyePair GetEyeEdgesPair(IList<Rectangle> eyesRectangles)
+		{
+			EyePair result = new EyePair();
+			if (eyesRectangles[0].X < eyesRectangles[1].X)
+			{
+				result.LeftEye = new Point(eyesRectangles[0].X, eyesRectangles[0].Y + eyesRectangles[0].Height / 2);
+				result.RightEye = new Point(eyesRectangles[1].X + eyesRectangles[1].Width, eyesRectangles[1].Y + eyesRectangles[1].Height / 2);
+			}
+			else
+			{
+				result.LeftEye = new Point(eyesRectangles[1].X, eyesRectangles[1].Y + eyesRectangles[1].Height / 2);
+				result.RightEye = new Point(eyesRectangles[0].X + eyesRectangles[0].Width, eyesRectangles[0].Y + eyesRectangles[0].Height / 2);
+			}
+			return result;
 		}
 	}
 }

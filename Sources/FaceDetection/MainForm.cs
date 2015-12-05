@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using FaceDetection.Helpers;
+using FaceDetection.Implementations;
 using FaceDetection.Interfaces;
 using FaceDetection.Models;
 
@@ -16,6 +16,8 @@ namespace FaceDetection
 	{
 		private WebCam_Capture.WebCamCapture WebCamCapture;
 		private IDetectionService _detectionService;
+		private CalibrationService _calibrationService;
+		private const string CalibrationFileName = "CalibrationList.ser";
 
 		private Capture _capture = null;
 		private Image _currentWebCamImage;
@@ -24,8 +26,17 @@ namespace FaceDetection
 		{
 			InitializeComponent();
 			_detectionService = new DetectionService();
+			_calibrationService = new CalibrationService(CalibrationFileName);
 			SetComponentsSettings();
 			SetWebcamSettings();
+			if (_calibrationService.IsCalibrated)
+			{
+				this.saveCalibration_btn.Visible = true;
+			}
+			else
+			{
+				this.saveCalibration_btn.Visible = false;
+			}
 		}
 
 		private void SetComponentsSettings()
@@ -37,6 +48,23 @@ namespace FaceDetection
 			this.ClientSize.Width / 2 - this.ParentPanel.Size.Width / 2,
 			this.ClientSize.Height / 2 - this.ParentPanel.Size.Height / 2);
 			this.ParentPanel.Anchor = AnchorStyles.None;
+		}
+
+		private void ChangeCalibrationButtonsParameters()
+		{
+			if (_calibrationService.IsCalibrated)
+			{
+				this.analize_btn.Visible = true;
+				this.getCalibrationPoint_btn.Visible = false;
+				this.saveCalibration_btn.Visible = true;
+			}
+			else
+			{
+				this.analize_btn.Visible = false;
+				this.getCalibrationPoint_btn.Visible = true;
+				this.saveCalibration_btn.Visible = false;
+				this.getCalibrationPoint_btn.Location = _calibrationService.MoveScreenCalibrationPoint();
+			}
 		}
 
 		private void SetWebcamSettings()
@@ -71,13 +99,23 @@ namespace FaceDetection
 
 		private void Calibrate_btn_Click(object sender, EventArgs e)
 		{
-
+			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)_currentWebCamImage);
+			DetectionResult detectionResult = _detectionService.GetDetectionResult(imageFrame);
+			if (detectionResult.Status == DetectionStatus.Success)
+			{
+				_calibrationService.CalibrationList.Add(new CalibrationItem()
+				{
+					EyePoint = detectionResult.EyeCentersPair.RightEye,
+					ScreenPoint = _calibrationService.CurrentScreenCalibrationPoint,
+				});
+				ChangeCalibrationButtonsParameters();
+			}
 		}
 
 		private void Detect_buttonClick(object sender, EventArgs e)
 		{
-			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)fixedPicture.Image);
-			DetectionResult detectionResult = GetDetectionResult(imageFrame);
+			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)_currentWebCamImage);
+			DetectionResult detectionResult = _detectionService.GetDetectionResult(imageFrame);
 			if (detectionResult.Status == DetectionStatus.Success)
 			{
 				LineSegment2D lineBetweenEyes = new LineSegment2D(detectionResult.EyeEdgesPair.LeftEye, detectionResult.EyeEdgesPair.RightEye);
@@ -94,7 +132,7 @@ namespace FaceDetection
 
 				DisplayAnglesValues(sideLongTilt, rotationAroundVerticalOx, backForthAngle);
 
-				imageFrame = GetImageFrame(imageFrame, detectionResult.Face);
+				imageFrame = DrawingHelper.GetImageFrame(imageFrame, detectionResult.Face);
 				DrawingHelper.DrawDetectedObjects(imageFrame, detectionResult);
 
 				DrawingHelper.DrawLines(new List<LineSegment2D>()
@@ -109,37 +147,10 @@ namespace FaceDetection
 			}
 		}
 
-		private Image<Bgr, Byte> GetImageFrame(Image<Bgr, Byte> imageFrame, Rectangle detectedFace)
+		private void StartCalibration_btn_Click(object sender, EventArgs e)
 		{
-			return imageFrame.Copy(detectedFace);
-		}
-
-		private DetectionResult GetDetectionResult(Image<Bgr, Byte> imageFrame)
-		{
-			DetectionResult result = new DetectionResult() {Status = DetectionStatus.Success};
-			try
-			{
-				Rectangle face = _detectionService.GetFace(imageFrame);
-				Image<Bgr, Byte> faceFrame = imageFrame.Copy(face);
-				IList<Rectangle> detectedEyes = _detectionService.GetEyes(faceFrame);
-				EyePair eyeEdgesPair = GetEyeEdgesPair(detectedEyes);
-				EyePair eyeCentersPair = GetEyeCentersPair(detectedEyes.Select(eye => eye.Center()).ToList());
-				Point mouthCenterPoint = _detectionService.GetMouth(faceFrame);
-				Point nosePoint = _detectionService.GetNose(faceFrame, eyeEdgesPair);
-
-				result.Face = face;
-				result.DetectedEyes = detectedEyes;
-				result.EyeEdgesPair = eyeEdgesPair;
-				result.EyeCentersPair = eyeCentersPair;
-				result.MouthCenterPoint = mouthCenterPoint;
-				result.NosePoint = nosePoint;
-			}
-			catch (Exception)
-			{
-				result.Status = DetectionStatus.Error;
-				MessageBox.Show("Unable to find face");
-			}
-			return result;
+			_calibrationService.CalibrationList.Clear();
+			ChangeCalibrationButtonsParameters();
 		}
 
 		#endregion EventActions
@@ -151,36 +162,13 @@ namespace FaceDetection
 			this.backForthAngleLabel.Text = backForthAngle.ToString();
 		}
 
-		private EyePair GetEyeCentersPair(IList<Point> eyesCenters)
+		private void SaveCalibration_Click(object sender, EventArgs e)
 		{
-			EyePair result = new EyePair();
-			if (eyesCenters[0].X < eyesCenters[1].X)
+			if (_calibrationService.IsCalibrated)
 			{
-				result.LeftEye = eyesCenters[0];
-				result.RightEye = eyesCenters[1];
+				_calibrationService.SaveCalibrationList(CalibrationFileName);
 			}
-			else
-			{
-				result.LeftEye = eyesCenters[1];
-				result.RightEye = eyesCenters[0];
-			}
-			return result;
-		}
-
-		private EyePair GetEyeEdgesPair(IList<Rectangle> eyesRectangles)
-		{
-			EyePair result = new EyePair();
-			if (eyesRectangles[0].X < eyesRectangles[1].X)
-			{
-				result.LeftEye = new Point(eyesRectangles[0].X, eyesRectangles[0].Y + eyesRectangles[0].Height / 2);
-				result.RightEye = new Point(eyesRectangles[1].X + eyesRectangles[1].Width, eyesRectangles[1].Y + eyesRectangles[1].Height / 2);
-			}
-			else
-			{
-				result.LeftEye = new Point(eyesRectangles[1].X, eyesRectangles[1].Y + eyesRectangles[1].Height / 2);
-				result.RightEye = new Point(eyesRectangles[0].X + eyesRectangles[0].Width, eyesRectangles[0].Y + eyesRectangles[0].Height / 2);
-			}
-			return result;
+			MessageBox.Show("Saved");
 		}
 	}
 }

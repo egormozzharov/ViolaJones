@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
 			this.WebCamCapture = new WebCam_Capture.WebCamCapture();
-			this.button1 = new System.Windows.Forms.Button();
+			this.detect_btn = new System.Windows.Forms.Button();
 			this.fixedPicture = new System.Windows.Forms.PictureBox();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.catchPicture_button = new System.Windows.Forms.Button();
@@ -45,7 +45,10 @@
 			this.backForthAngleLabel = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.ParentPanel = new System.Windows.Forms.Panel();
-			this.calibrate_btn = new System.Windows.Forms.Button();
+			this.getCalibrationPoint_btn = new System.Windows.Forms.Button();
+			this.analize_btn = new System.Windows.Forms.Button();
+			this.startCalibration_btn = new System.Windows.Forms.Button();
+			this.saveCalibration_btn = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.webCamPicture)).BeginInit();
@@ -65,22 +68,22 @@
 			this.WebCamCapture.TimeToCapture_milliseconds = 100;
 			this.WebCamCapture.ImageCaptured += new WebCam_Capture.WebCamCapture.WebCamEventHandler(this.WebCamCapture_ImageCaptured);
 			// 
-			// button1
+			// detect_btn
 			// 
-			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.button1.Location = new System.Drawing.Point(469, 18);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(431, 46);
-			this.button1.TabIndex = 5;
-			this.button1.Text = "Detect";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.Detect_buttonClick);
+			this.detect_btn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.detect_btn.Location = new System.Drawing.Point(469, 18);
+			this.detect_btn.Name = "detect_btn";
+			this.detect_btn.Size = new System.Drawing.Size(431, 46);
+			this.detect_btn.TabIndex = 5;
+			this.detect_btn.Text = "Detect";
+			this.detect_btn.UseVisualStyleBackColor = true;
+			this.detect_btn.Click += new System.EventHandler(this.Detect_buttonClick);
 			// 
 			// fixedPicture
 			// 
 			this.fixedPicture.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.fixedPicture.BackColor = System.Drawing.SystemColors.ActiveBorder;
-			this.fixedPicture.Location = new System.Drawing.Point(481, 10);
+			this.fixedPicture.Location = new System.Drawing.Point(480, 10);
 			this.fixedPicture.Name = "fixedPicture";
 			this.fixedPicture.Size = new System.Drawing.Size(448, 381);
 			this.fixedPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -90,7 +93,7 @@
 			// panel2
 			// 
 			this.panel2.Controls.Add(this.catchPicture_button);
-			this.panel2.Controls.Add(this.button1);
+			this.panel2.Controls.Add(this.detect_btn);
 			this.panel2.Location = new System.Drawing.Point(18, 407);
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(917, 82);
@@ -208,32 +211,65 @@
 			// ParentPanel
 			// 
 			this.ParentPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+			this.ParentPanel.Controls.Add(this.startCalibration_btn);
+			this.ParentPanel.Controls.Add(this.saveCalibration_btn);
 			this.ParentPanel.Controls.Add(this.panel1);
 			this.ParentPanel.Controls.Add(this.fixedPicture);
+			this.ParentPanel.Controls.Add(this.analize_btn);
 			this.ParentPanel.Controls.Add(this.webCamPicture);
 			this.ParentPanel.Controls.Add(this.panel2);
 			this.ParentPanel.Location = new System.Drawing.Point(12, 12);
 			this.ParentPanel.MinimumSize = new System.Drawing.Size(400, 400);
 			this.ParentPanel.Name = "ParentPanel";
-			this.ParentPanel.Size = new System.Drawing.Size(938, 572);
+			this.ParentPanel.Size = new System.Drawing.Size(938, 616);
 			this.ParentPanel.TabIndex = 35;
 			// 
-			// calibrate_btn
+			// getCalibrationPoint_btn
 			// 
-			this.calibrate_btn.Location = new System.Drawing.Point(447, 590);
-			this.calibrate_btn.Name = "calibrate_btn";
-			this.calibrate_btn.Size = new System.Drawing.Size(86, 37);
-			this.calibrate_btn.TabIndex = 36;
-			this.calibrate_btn.Text = "Calibrate";
-			this.calibrate_btn.UseVisualStyleBackColor = true;
-			this.calibrate_btn.Click += new System.EventHandler(this.Calibrate_btn_Click);
+			this.getCalibrationPoint_btn.Location = new System.Drawing.Point(449, 634);
+			this.getCalibrationPoint_btn.Name = "getCalibrationPoint_btn";
+			this.getCalibrationPoint_btn.Size = new System.Drawing.Size(86, 37);
+			this.getCalibrationPoint_btn.TabIndex = 36;
+			this.getCalibrationPoint_btn.Text = "GetCalibrationPoint";
+			this.getCalibrationPoint_btn.UseVisualStyleBackColor = true;
+			this.getCalibrationPoint_btn.Visible = false;
+			this.getCalibrationPoint_btn.Click += new System.EventHandler(this.Calibrate_btn_Click);
+			// 
+			// analize_btn
+			// 
+			this.analize_btn.Location = new System.Drawing.Point(433, 562);
+			this.analize_btn.Name = "analize_btn";
+			this.analize_btn.Size = new System.Drawing.Size(90, 38);
+			this.analize_btn.TabIndex = 37;
+			this.analize_btn.Text = "Analize";
+			this.analize_btn.UseVisualStyleBackColor = true;
+			// 
+			// startCalibration_btn
+			// 
+			this.startCalibration_btn.Location = new System.Drawing.Point(15, 571);
+			this.startCalibration_btn.Name = "startCalibration_btn";
+			this.startCalibration_btn.Size = new System.Drawing.Size(90, 29);
+			this.startCalibration_btn.TabIndex = 38;
+			this.startCalibration_btn.Text = "start calibration";
+			this.startCalibration_btn.UseVisualStyleBackColor = true;
+			this.startCalibration_btn.Click += new System.EventHandler(this.StartCalibration_btn_Click);
+			// 
+			// saveCalibration_btn
+			// 
+			this.saveCalibration_btn.Location = new System.Drawing.Point(105, 570);
+			this.saveCalibration_btn.Name = "saveCalibration_btn";
+			this.saveCalibration_btn.Size = new System.Drawing.Size(87, 30);
+			this.saveCalibration_btn.TabIndex = 39;
+			this.saveCalibration_btn.Text = "saveCalibration";
+			this.saveCalibration_btn.UseVisualStyleBackColor = true;
+			this.saveCalibration_btn.Click += new System.EventHandler(this.SaveCalibration_Click);
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(963, 639);
-			this.Controls.Add(this.calibrate_btn);
+			this.ClientSize = new System.Drawing.Size(963, 669);
+			this.Controls.Add(this.getCalibrationPoint_btn);
 			this.Controls.Add(this.Dkoef);
 			this.Controls.Add(this.deyes);
 			this.Controls.Add(this.dexpected);
@@ -253,7 +289,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button detect_btn;
 		private System.Windows.Forms.PictureBox fixedPicture;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.PictureBox webCamPicture;
@@ -269,7 +305,10 @@
 		private System.Windows.Forms.Label backForthAngleLabel;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Panel ParentPanel;
-		private System.Windows.Forms.Button calibrate_btn;
+		private System.Windows.Forms.Button getCalibrationPoint_btn;
+		private System.Windows.Forms.Button analize_btn;
+		private System.Windows.Forms.Button startCalibration_btn;
+		private System.Windows.Forms.Button saveCalibration_btn;
     }
 }
 

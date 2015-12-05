@@ -87,6 +87,7 @@
     <Compile Include="Implementations\DetectionService.cs" />
     <Compile Include="Helpers\DrawingHelper.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Implementations\SerializationService.cs" />
     <Compile Include="Interfaces\ICalibrationService.cs" />
     <Compile Include="Models\CalibrationItem.cs" />
     <Compile Include="Models\DetectionResult.cs" />

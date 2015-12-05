@@ -46,5 +46,10 @@ namespace FaceDetection.Helpers
 			DrawPoint(detectionResult.MouthCenterPoint, faceFrame, Color.Red);
 			DrawPoint(detectionResult.NosePoint, faceFrame, Color.Brown);
 		}
+
+		public static Image<Bgr, Byte> GetImageFrame(Image<Bgr, Byte> imageFrame, Rectangle detectedFace)
+		{
+			return imageFrame.Copy(detectedFace);
+		}
 	}
 }
