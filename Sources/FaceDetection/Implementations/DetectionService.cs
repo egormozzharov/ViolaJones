@@ -37,11 +37,11 @@ namespace FaceDetection
 			{
 				Rectangle face = GetFace(imageFrame);
 				Image<Bgr, Byte> faceFrame = imageFrame.Copy(face);
-				IList<Rectangle> detectedEyes = GetEyes(faceFrame);
+				IList<Rectangle> detectedEyes = GetEyes(faceFrame, face);
 				EyePair eyeEdgesPair = GetEyeEdgesPair(detectedEyes);
 				EyePair eyeCentersPair = GetEyeCentersPair(detectedEyes.Select(eye => eye.Center()).ToList());
-				Point mouthCenterPoint = GetMouth(faceFrame);
-				Point nosePoint = GetNose(faceFrame, eyeEdgesPair);
+				Point mouthCenterPoint = GetMouth(faceFrame, face);
+				Point nosePoint = GetNose(faceFrame, eyeEdgesPair, face);
 				Point bridgeNosePoint = MathHelper.GetPerpendicularPoint(eyeEdgesPair.LeftEye, eyeEdgesPair.RightEye, nosePoint);
 				Point faceLeftHighPoint = new Point(face.X, face.Y);
 
@@ -52,7 +52,6 @@ namespace FaceDetection
 				result.MouthCenterPoint = mouthCenterPoint;
 				result.NosePoint = nosePoint;
 				result.BridgeNosePoint = bridgeNosePoint;
-				result.LeftHighFacePoint = faceLeftHighPoint;
 			}
 			catch (Exception)
 			{
@@ -67,7 +66,7 @@ namespace FaceDetection
 			return _faceCascadeClassifier.DetectMultiScale(imageFrame, 1.1, 1, new Size(250, 250)).First();
 		}
 
-		public Point GetMouth(Image<Bgr, Byte> faceFrame)
+		public Point GetMouth(Image<Bgr, Byte> faceFrame, Rectangle face)
 		{
 			Color color = Color.Red;
 			int mouthFrameHeight = Convert.ToInt32(faceFrame.Height * 0.3);
@@ -81,14 +80,14 @@ namespace FaceDetection
 			IList<Rectangle> mouthCandidates = new List<Rectangle>();
 			foreach (Rectangle mouth in mouths)
 			{
-				Rectangle mouthAbsolute = new Rectangle(mouth.X, mouth.Y + mouthFrameY, mouth.Width, mouth.Height);
+				Rectangle mouthAbsolute = new Rectangle(mouth.X + face.X, mouth.Y + mouthFrameY + face.Y, mouth.Width, mouth.Height);
 				mouthCandidates.Add(mouthAbsolute);
 			}
 			Rectangle detectedMouht = mouthCandidates.First();
 			return detectedMouht.Center();
 		}
 
-		public Point GetNose(Image<Bgr, Byte> faceFrame, EyePair eyePair)
+		public Point GetNose(Image<Bgr, Byte> faceFrame, EyePair eyePair, Rectangle face)
 		{
 			Color color = Color.Brown;
 			int noseFrameHeight = Convert.ToInt32(faceFrame.Height * 0.25);
@@ -102,7 +101,7 @@ namespace FaceDetection
 			IList<Rectangle> noseCandidates = new List<Rectangle>();
 			foreach (Rectangle nose in noses)
 			{
-				Rectangle noseAbsolute = new Rectangle(nose.X, nose.Y + noseFrameY, nose.Width, nose.Height);
+				Rectangle noseAbsolute = new Rectangle(nose.X + face.X, nose.Y + noseFrameY + face.Y, nose.Width, nose.Height);
 				Point noseCenter = noseAbsolute.Center();
 				if (NoseIsBeetweenTheEyes(noseAbsolute, noseCenter, eyePair))
 				{
@@ -113,7 +112,7 @@ namespace FaceDetection
 			return detectedNose.Center();
 		}
 
-		public IList<Rectangle> GetEyes(Image<Bgr, Byte> faceFrame)
+		public IList<Rectangle> GetEyes(Image<Bgr, Byte> faceFrame, Rectangle face)
 		{
 			Color color = Color.Aqua;
 			Rectangle eyesFrame = new Rectangle(0, 0, faceFrame.Width, Convert.ToInt32(faceFrame.Height * 0.7));
@@ -125,7 +124,7 @@ namespace FaceDetection
 			IList<Rectangle> eyesDetected = new List<Rectangle>();
 			foreach (Rectangle eye in eyes)
 			{
-				Rectangle eyeAbsolute = new Rectangle(eye.X, eye.Y, eye.Width, eye.Height);
+				Rectangle eyeAbsolute = new Rectangle(eye.X + face.X, eye.Y + face.Y, eye.Width, eye.Height);
 				eyesDetected.Add(eyeAbsolute);
 			}
 			return eyesDetected;

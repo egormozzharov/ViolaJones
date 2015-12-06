@@ -19,8 +19,6 @@ namespace FaceDetection.Models
 
 		public Point BridgeNosePoint { get; set; }
 
-		public Point LeftHighFacePoint { get; set; }
-
 		public DetectionStatus Status { get; set; }
 	}
 }

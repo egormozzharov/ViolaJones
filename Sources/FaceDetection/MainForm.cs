@@ -117,11 +117,10 @@ namespace FaceDetection
 				{
 					EyePoint = detectionResult.EyeCentersPair.RightEye,
 					ScreenPoint = _screenCalibrationHelper.CurrentScreenCalibrationPoint,
-					BridgeCoordinatesRelative = detectionResult.BridgeNosePoint,
-					FaceLeftHighPointAbsolute = detectionResult.LeftHighFacePoint,
+					BridgeCoordinatesAbsolute = detectionResult.BridgeNosePoint,
 				});
 				ChangeCalibrationButtonsParameters();
-				AnglesLogic(detectionResult, ref imageFrame);
+				AnglesLogic(detectionResult, imageFrame);
 				fixedPicture.Image = imageFrame.Bitmap;
 			}
 			if (_screenCalibrationHelper.IsCalibrated)
@@ -161,13 +160,13 @@ namespace FaceDetection
 			DetectionResult detectionResult = _detectionService.GetDetectionResult(imageFrame);
 			if (detectionResult.Status == DetectionStatus.Success)
 			{
-				AnglesLogic(detectionResult, ref imageFrame);
+				AnglesLogic(detectionResult, imageFrame);
 				ViewDetectionLogic(detectionResult, imageFrame);
 				fixedPicture.Image = imageFrame.Bitmap;
 			}
 		}
 
-		private void AnglesLogic(DetectionResult detectionResult, ref Image<Bgr, Byte> imageFrame)
+		private void AnglesLogic(DetectionResult detectionResult, Image<Bgr, Byte> imageFrame)
 		{
 			LineSegment2D lineBetweenEyes = new LineSegment2D(detectionResult.EyeEdgesPair.LeftEye, detectionResult.EyeEdgesPair.RightEye);
 			LineSegment2D leftEyeToMouth = new LineSegment2D(detectionResult.EyeEdgesPair.LeftEye, detectionResult.MouthCenterPoint);
@@ -181,8 +180,6 @@ namespace FaceDetection
 			double backForthAngle = FaceRotation.GetBackForthTilt(detectionResult.MouthCenterPoint, bridgeNosePoint, lineBetweenEyes);
 
 			DisplayAnglesValues(sideLongTilt, rotationAroundVerticalOx, backForthAngle);
-
-			imageFrame = DrawingHelper.GetImageFrame(imageFrame, detectionResult.Face);
 			DrawingHelper.DrawDetectedObjects(imageFrame, detectionResult);
 
 			DrawingHelper.DrawLines(new List<LineSegment2D>()
