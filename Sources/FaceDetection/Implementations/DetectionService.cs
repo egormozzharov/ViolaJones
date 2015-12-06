@@ -43,7 +43,6 @@ namespace FaceDetection
 				Point mouthCenterPoint = GetMouth(faceFrame, face);
 				Point nosePoint = GetNose(faceFrame, eyeEdgesPair, face);
 				Point bridgeNosePoint = MathHelper.GetPerpendicularPoint(eyeEdgesPair.LeftEye, eyeEdgesPair.RightEye, nosePoint);
-				Point faceLeftHighPoint = new Point(face.X, face.Y);
 
 				result.Face = face;
 				result.DetectedEyes = detectedEyes;

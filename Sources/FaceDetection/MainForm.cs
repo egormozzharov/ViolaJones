@@ -91,7 +91,6 @@ namespace FaceDetection
 			Graphics g = Graphics.FromImage(webCamImage);
 			g.DrawRectangle(new Pen(Color.Red), new Rectangle(0 + 190, 60, 170, 300));
 			g.DrawLine(new Pen(Color.Red), 190, 160, 190 + 170, 160);
-
 		}
 
 		#region EventActions
@@ -210,13 +209,28 @@ namespace FaceDetection
 				Angle = eyePointAngle,
 				Radius = eyePointRadius,
 			};
+			//screen angle calculation
 			double screenAngle = _calibrationService.GetScreenAngle(eyePolarCoordinate);
+			Point screenPoint = MathHelper.ConvertPolarToRectangularCoordinaty(new PolarCoordinate()
+			{
+				Angle = screenAngle,
+				Radius = 200,
+			}, _calibrationService.SCenterPoint);
+			this.SAngleLabel.Text = screenAngle.ToString();
+			DrawingHelper.DrawLine(backgroundPanel, screenPoint, _calibrationService.SCenterPoint);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.SCenterPoint);
+			ParentPanel.Hide();
 		}
 
 		private void RecalculateCoordinates(DetectionResult detectionResult, ref Point rightEye)
 		{
 			_calibrationService.RecalculateCalibration();
 			rightEye = _calibrationService.RecalculateCalibratedPoint(detectionResult.BridgeNosePoint, rightEye);
+		}
+
+		private void ShowPanels_btn_Click(object sender, EventArgs e)
+		{
+			this.ParentPanel.Show();
 		}
 	}
 }

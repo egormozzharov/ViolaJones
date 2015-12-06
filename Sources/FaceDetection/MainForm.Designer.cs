@@ -49,11 +49,16 @@
 			this.saveCalibration_btn = new System.Windows.Forms.Button();
 			this.analize_btn = new System.Windows.Forms.Button();
 			this.getCalibrationPoint_btn = new System.Windows.Forms.Button();
+			this.backgroundPanel = new System.Windows.Forms.Panel();
+			this.ShowPanels_btn = new System.Windows.Forms.Button();
+			this.label5 = new System.Windows.Forms.Label();
+			this.SAngleLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.webCamPicture)).BeginInit();
 			this.panel1.SuspendLayout();
 			this.ParentPanel.SuspendLayout();
+			this.backgroundPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// WebCamCapture
@@ -261,6 +266,45 @@
 			this.getCalibrationPoint_btn.Visible = false;
 			this.getCalibrationPoint_btn.Click += new System.EventHandler(this.Calibrate_btn_Click);
 			// 
+			// backgroundPanel
+			// 
+			this.backgroundPanel.BackColor = System.Drawing.SystemColors.ControlLightLight;
+			this.backgroundPanel.Controls.Add(this.SAngleLabel);
+			this.backgroundPanel.Controls.Add(this.label5);
+			this.backgroundPanel.Controls.Add(this.ShowPanels_btn);
+			this.backgroundPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.backgroundPanel.Location = new System.Drawing.Point(0, 0);
+			this.backgroundPanel.Name = "backgroundPanel";
+			this.backgroundPanel.Size = new System.Drawing.Size(963, 669);
+			this.backgroundPanel.TabIndex = 40;
+			// 
+			// ShowPanels_btn
+			// 
+			this.ShowPanels_btn.Location = new System.Drawing.Point(12, 641);
+			this.ShowPanels_btn.Name = "ShowPanels_btn";
+			this.ShowPanels_btn.Size = new System.Drawing.Size(75, 23);
+			this.ShowPanels_btn.TabIndex = 0;
+			this.ShowPanels_btn.Text = "ShowPanels";
+			this.ShowPanels_btn.UseVisualStyleBackColor = true;
+			this.ShowPanels_btn.Click += new System.EventHandler(this.ShowPanels_btn_Click);
+			// 
+			// label5
+			// 
+			this.label5.AutoSize = true;
+			this.label5.Location = new System.Drawing.Point(97, 647);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(41, 13);
+			this.label5.TabIndex = 1;
+			this.label5.Text = "SAngle";
+			// 
+			// SAngleLabel
+			// 
+			this.SAngleLabel.AutoSize = true;
+			this.SAngleLabel.Location = new System.Drawing.Point(138, 647);
+			this.SAngleLabel.Name = "SAngleLabel";
+			this.SAngleLabel.Size = new System.Drawing.Size(0, 13);
+			this.SAngleLabel.TabIndex = 2;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -271,6 +315,7 @@
 			this.Controls.Add(this.deyes);
 			this.Controls.Add(this.dexpected);
 			this.Controls.Add(this.ParentPanel);
+			this.Controls.Add(this.backgroundPanel);
 			this.Name = "MainForm";
 			this.Text = "Eye finder";
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).EndInit();
@@ -279,6 +324,8 @@
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			this.ParentPanel.ResumeLayout(false);
+			this.backgroundPanel.ResumeLayout(false);
+			this.backgroundPanel.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -306,6 +353,10 @@
 		private System.Windows.Forms.Button saveCalibration_btn;
 		private System.Windows.Forms.Label fiF;
 		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Panel backgroundPanel;
+		private System.Windows.Forms.Button ShowPanels_btn;
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.Label SAngleLabel;
     }
 }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
@@ -125,6 +126,27 @@ namespace FaceDetection.Helpers
 
 				return bmPhoto;
 			}
+		}
+
+		public static void DrawLine(Control control, Point pointA, Point pointB)
+		{
+			Pen pen = new Pen(Color.Red);
+			control.Paint += new PaintEventHandler((object sender, PaintEventArgs e) =>
+			{
+				Graphics g = e.Graphics;
+				g.DrawLine(pen, pointA, pointB);
+			});
+			control.Refresh();
+		}
+
+		public static void DrawPoint(Control control, Point point)
+		{
+			Pen pen = new Pen(Color.Red);
+			control.Paint += new PaintEventHandler((object sender, PaintEventArgs e) =>
+			{
+				e.Graphics.FillRectangle(new SolidBrush(Color.DarkRed), point.X, point.Y, 4, 4);
+			});
+			control.Refresh();
 		}
 	}
 }

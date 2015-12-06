@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using Emgu.CV.Structure;
+using FaceDetection.Models;
 
 namespace FaceDetection
 {
@@ -18,6 +19,11 @@ namespace FaceDetection
 				degree = 360 + degree;
 
 			return degree%360;
+		}
+
+		public static double DegreeToRadians(double angle)
+		{
+			return (Math.PI / 180) * angle;
 		}
 
 		public static double LineLength(Point start, Point end)
@@ -48,6 +54,13 @@ namespace FaceDetection
 			Point p4 = line2.P2;
 			double angleRad = Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) - Math.Atan2(p4.Y - p3.Y, p4.X - p3.X);
 			return RadianToDegree(angleRad);
+		}
+
+		public static Point ConvertPolarToRectangularCoordinaty(PolarCoordinate polarCoordinate, Point basePoint)
+		{
+			int x = Convert.ToInt32(polarCoordinate.Radius*Math.Cos(DegreeToRadians(polarCoordinate.Angle)));
+			int y = Convert.ToInt32(polarCoordinate.Radius*Math.Sin(DegreeToRadians(polarCoordinate.Angle)));
+			return new Point(basePoint.X + x, basePoint.Y - y);
 		}
 	}
 }
