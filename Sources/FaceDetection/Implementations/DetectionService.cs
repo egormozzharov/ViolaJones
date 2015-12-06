@@ -42,6 +42,8 @@ namespace FaceDetection
 				EyePair eyeCentersPair = GetEyeCentersPair(detectedEyes.Select(eye => eye.Center()).ToList());
 				Point mouthCenterPoint = GetMouth(faceFrame);
 				Point nosePoint = GetNose(faceFrame, eyeEdgesPair);
+				Point bridgeNosePoint = MathHelper.GetPerpendicularPoint(eyeEdgesPair.LeftEye, eyeEdgesPair.RightEye, nosePoint);
+				Point faceLeftHighPoint = new Point(face.X, face.Y);
 
 				result.Face = face;
 				result.DetectedEyes = detectedEyes;
@@ -49,6 +51,8 @@ namespace FaceDetection
 				result.EyeCentersPair = eyeCentersPair;
 				result.MouthCenterPoint = mouthCenterPoint;
 				result.NosePoint = nosePoint;
+				result.BridgeNosePoint = bridgeNosePoint;
+				result.LeftHighFacePoint = faceLeftHighPoint;
 			}
 			catch (Exception)
 			{

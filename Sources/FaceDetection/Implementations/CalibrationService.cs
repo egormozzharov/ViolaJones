@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -10,101 +9,17 @@ namespace FaceDetection.Implementations
 {
 	public class CalibrationService
 	{
-		private const int PointsNumber = 9;
 		private readonly SerializationService _serializationService;
-		private int _currentSceenCalibrationPoint = -1;
 
 		public CalibrationService(string calibrationFileName)
 		{
 			_serializationService = new SerializationService();
-			CalibrationList = TryLoadCalibrationList(calibrationFileName);
-		}
-
-		public IList<CalibrationItem> CalibrationList { get; set; }
-
-		public Point CurrentScreenCalibrationPoint
-		{
-			get
-			{
-				return ScreenCalibrationPoints[_currentSceenCalibrationPoint];
-			}
-		}
-
-		public Point FCenterPoint
-		{
-			get { return CalibrationList[8].EyePoint; }
-		}
-
-		public Point FPoint1
-		{
-			get { return CalibrationList[0].EyePoint; }
-		}
-
-		public Point SCenterPoint
-		{
-			get { return ScreenCalibrationPoints[8]; }
-		}
-
-		public Point SPoint1
-		{
-			get { return ScreenCalibrationPoints[0]; }
+			CalibrationInfoList = TryLoadCalibrationList(calibrationFileName);
 		}
 
 		public void SaveCalibrationList(string calibrationFileName)
 		{
-			_serializationService.Serialize(CalibrationList, calibrationFileName);
-		}
-
-		public Point MoveScreenCalibrationPoint()
-		{
-			_currentSceenCalibrationPoint++;
-			return ScreenCalibrationPoints[_currentSceenCalibrationPoint];
-		}
-
-		public bool HasNextCalibrationPoint
-		{
-			get { return IsCalibrated; }
-		}
-
-		public bool IsCalibrated
-		{
-			get { return CalibrationList.Count == PointsNumber; }
-		}
-
-		public Rectangle Screen
-		{
-			get
-			{
-				return System.Windows.Forms.Screen.PrimaryScreen.Bounds;
-			}
-		}
-
-		private IList<Point> ScreenCalibrationPoints
-		{
-			get
-			{
-				IList<Point> sPoints = new List<Point>();
-				sPoints.Add(new Point((Screen.X + Screen.Width) - PaddingWidth, (Screen.Y + Screen.Height / 2)));
-				sPoints.Add(new Point((Screen.X + Screen.Width) - PaddingWidth, Screen.Y));
-				sPoints.Add(new Point((Screen.X + Screen.Width / 2), Screen.Y));
-				sPoints.Add(new Point(Screen.X, Screen.Y));
-				sPoints.Add(new Point(Screen.X, Screen.Y + Screen.Height / 2));
-				sPoints.Add(new Point(Screen.X, (Screen.Y + Screen.Height) - PaddingHeight * 2));
-				sPoints.Add(new Point(Screen.X + Screen.Width / 2, (Screen.Y + Screen.Height) - PaddingHeight * 2));
-				sPoints.Add(new Point((Screen.X + Screen.Width) - PaddingWidth, (Screen.Y + Screen.Height) - PaddingHeight * 2));
-				sPoints.Add(new Point(Screen.X + Screen.Width / 2, Screen.Y + Screen.Height / 2));
-				return sPoints;
-			}
-		}
-
-		private int PaddingHeight
-		{
-			get { return 50; }
-		}
-
-		private int PaddingWidth
-		{
-			get { return 50; }
+			_serializationService.Serialize(CalibrationInfoList, calibrationFileName);
 		}
 
 		private IList<CalibrationItem> TryLoadCalibrationList(string calibrationFilePath)
@@ -117,46 +32,157 @@ namespace FaceDetection.Implementations
 			return result;
 		}
 
-		private IList<PolarCoordinate> _polarCoordinatesF;
-		public IList<PolarCoordinate> PolarCoordinatesF
+		public IList<CalibrationItem> CalibrationInfoList { get; set; }
+
+
+		public LineSegment2D FBaseLine
+		{
+			get { return new LineSegment2D(FCenterPoint, FPoint1); }
+		}
+
+		public Point FCenterPoint
+		{
+			get { return CalibrationInfoList.Last().EyePoint; }
+		}
+
+		public Point FPoint1
+		{
+			get { return CalibrationInfoList.First().EyePoint; }
+		}
+
+
+		public LineSegment2D SBaseLine
+		{
+			get { return new LineSegment2D(SCenterPoint, SPoint1); }
+		}
+
+		public Point SCenterPoint
+		{
+			get { return CalibrationInfoList.Last().ScreenPoint; }
+		}
+
+		public Point SPoint1
+		{
+			get { return CalibrationInfoList.First().ScreenPoint; }
+		}
+
+		private IList<PolarCoordinatePair> _fPolarCoordinatesWithCorrespondingSCoordinate;
+		public IList<PolarCoordinatePair> FPolarCoordinatesWithCorrespondingSCoordinate
 		{
 			get
 			{
-				_polarCoordinatesF = new List<PolarCoordinate>();
-
-				LineSegment2D baseLine = new LineSegment2D(FCenterPoint, FPoint1);
-				foreach (Point eyePoint in CalibrationList.Select(item => item.EyePoint))
+				_fPolarCoordinatesWithCorrespondingSCoordinate = new List<PolarCoordinatePair>();
+				foreach (CalibrationItem item in CalibrationInfoList)
 				{
-					double angle = 360 - MathHelper.AngleBetweenLines(baseLine, new LineSegment2D(FCenterPoint, eyePoint));
-					_polarCoordinatesF.Add(new PolarCoordinate()
+					Point fPoint = item.EyePoint;
+					Point sPoint = item.ScreenPoint;
+					_fPolarCoordinatesWithCorrespondingSCoordinate.Add(new PolarCoordinatePair()
 					{
-						Radius = new LineSegment2D(FCenterPoint, eyePoint).Length,
-						Angle = angle,
+						FPolarCoordinate = new PolarCoordinate()
+						{
+							Radius = new LineSegment2D(FCenterPoint, fPoint).Length,
+							Angle = GetFLineAngle(fPoint),
+						},
+						SPolarCoordinate = new PolarCoordinate()
+						{
+							Radius = new LineSegment2D(SCenterPoint, sPoint).Length,
+							Angle = GetSLineAngle(sPoint),
+						}
 					});
 				}
-				return _polarCoordinatesF;
+				return _fPolarCoordinatesWithCorrespondingSCoordinate;
 			}
 		}
 
-		private IList<PolarCoordinate> _polarCoordinatesS;
-		public IList<PolarCoordinate> PolarCoordinatesS
+		public IList<PolarCoordinate> FPolarCoordinates
 		{
-			get
-			{
-				_polarCoordinatesS = new List<PolarCoordinate>();
+			get { return FPolarCoordinatesWithCorrespondingSCoordinate.Select(pair => pair.FPolarCoordinate).ToList(); }
+		} 
 
-				LineSegment2D baseLine = new LineSegment2D(SCenterPoint, SPoint1);
-				foreach (Point sPoint in ScreenCalibrationPoints)
-				{
-					double angle = MathHelper.AngleBetweenLines(baseLine, new LineSegment2D(SCenterPoint, sPoint));
-					_polarCoordinatesS.Add(new PolarCoordinate()
-					{
-						Radius = new LineSegment2D(FCenterPoint, sPoint).Length,
-						Angle = angle,
-					});
-				}
-				return _polarCoordinatesS;
+		public IList<PolarCoordinate> SPolarCoordinates
+		{
+			get { return FPolarCoordinatesWithCorrespondingSCoordinate.Select(pair => pair.SPolarCoordinate).ToList(); }
+		}
+
+		public double GetFLineAngle(Point fPoint)
+		{
+			double angle = MathHelper.AngleBetweenLines(FBaseLine, new LineSegment2D(FCenterPoint, fPoint));
+			if (angle != 0)
+			{
+				angle = 360 - angle;
 			}
+			return angle;
+		}
+
+		public double GetSLineAngle(Point sPoint)
+		{
+			return MathHelper.AngleBetweenLines(SBaseLine, new LineSegment2D(SCenterPoint, sPoint));
+		}
+
+		public PolarCoordinate GetClosestLessFPolarCoordinate(PolarCoordinate polarCoordinate)
+		{
+			double minAngle = FPolarCoordinates.Min(f => f.Angle);
+			PolarCoordinate closestCoordinate = FPolarCoordinates.First(p => p.Angle == minAngle);
+			foreach (PolarCoordinate fPoint in FPolarCoordinates)
+			{
+				if ((fPoint.Angle <= polarCoordinate.Angle)  && (fPoint.Angle > closestCoordinate.Angle))
+				{
+					closestCoordinate = fPoint;
+				}
+			}
+			return closestCoordinate;
+		}
+
+		public PolarCoordinate GetClosestBiggerFPolarCoordinate(PolarCoordinate polarCoordinate)
+		{
+			double maxAngle = FPolarCoordinates.Max(f => f.Angle);
+			PolarCoordinate closestCoordinate = FPolarCoordinates.First(p => p.Angle == maxAngle);
+			foreach (PolarCoordinate fPoint in FPolarCoordinates)
+			{
+				if ((fPoint.Angle >= polarCoordinate.Angle) && (fPoint.Angle < closestCoordinate.Angle))
+				{
+					closestCoordinate = fPoint;
+				}
+			}
+			return closestCoordinate;
+		}
+
+		public double GetScreenAngle(PolarCoordinate eyeDetectedCoordinate)
+		{
+			PolarCoordinate FfLessCoordinate = GetClosestLessFPolarCoordinate(eyeDetectedCoordinate);
+			PolarCoordinate FfBigCoordinate = GetClosestBiggerFPolarCoordinate(eyeDetectedCoordinate);
+
+			double Ff = eyeDetectedCoordinate.Angle;
+			double FfLess = FfLessCoordinate.Angle;
+			double FfBig = FfBigCoordinate.Angle;
+			double FsLess = FPolarCoordinatesWithCorrespondingSCoordinate.First(pair =>
+					(pair.FPolarCoordinate.Angle == FfLessCoordinate.Angle) &&
+					(pair.FPolarCoordinate.Radius == FfLessCoordinate.Radius)).SPolarCoordinate.Angle;
+			double FsBig = FPolarCoordinatesWithCorrespondingSCoordinate.First(pair =>
+				(pair.FPolarCoordinate.Angle == FfBigCoordinate.Angle && pair.FPolarCoordinate.Radius == FfBigCoordinate.Radius)).SPolarCoordinate.Angle;
+			//if detected point is the calibration point`
+			if (FfLess == FfBig)
+			{
+				return FsLess;
+			}
+			double result = ((Ff - FfLess)/(FfBig - FfLess))*(FsBig - FsLess) + FsBig;
+			return result;
+		}
+
+		/// <summary>
+		/// Recalculate calibrated coordinates based on NoseBridge shifting.
+		/// </summary>
+		public void RecalculateCalibration()
+		{
+			//CalibrationItem centerCalibrationItem = CalibrationInfoList.Last();
+			//Point centerNoseBridgeAbsolute = centerCalibrationItem.BridgeCoordinatesAbsolute;
+			//foreach (CalibrationItem item in CalibrationInfoList)
+			//{
+			//	Point bridgeNoseAbsolute = item.BridgeCoordinatesAbsolute;
+			//	Point delta = new Point(bridgeNoseAbsolute.X - centerNoseBridgeAbsolute.X, bridgeNoseAbsolute.Y - centerNoseBridgeAbsolute.Y);
+
+
+			//}
 		}
 	}
 }

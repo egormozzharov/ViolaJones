@@ -19,8 +19,15 @@ namespace FaceDetection.Helpers
 
 		public static void DrawPoint(Point centerPoint, Image<Bgr, Byte> imageFrame, Color color)
 		{
-			imageFrame.Draw(new CircleF(centerPoint, 2), new Bgr(color));
-			//DrawCoordinates(centerPoint, imageFrame);
+			imageFrame.Draw(new CircleF(centerPoint, 1), new Bgr(color));
+		}
+
+		public static void DrawPoints(IEnumerable<Point> centerPoints, Image<Bgr, Byte> imageFrame, Color color)
+		{
+			foreach (Point point in centerPoints)
+			{
+				DrawPoint(point, imageFrame, color);
+			}
 		}
 
 		public static void DrawCoordinates(Point centerPoint, Image<Bgr, Byte> imageFrame)
