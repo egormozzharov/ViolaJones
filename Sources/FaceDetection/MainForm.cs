@@ -20,6 +20,7 @@ namespace FaceDetection
 		private CalibrationService _calibrationService;
 		private ScreenCalibrationHelper _screenCalibrationHelper;
 		private const string CalibrationFileName = "CalibrationList.ser";
+		private int counterImage = 1;
 
 		private Capture _capture = null;
 		private Image _currentWebCamImage;
@@ -74,8 +75,8 @@ namespace FaceDetection
 		private void SetWebcamSettings()
 		{
 			// set the image capture size
-			this.WebCamCapture.CaptureHeight = this.webCamPicture.Height;
-			this.WebCamCapture.CaptureWidth = this.webCamPicture.Width;
+			this.WebCamCapture.CaptureHeight = 480;
+			this.WebCamCapture.CaptureWidth = 640;
 
 			// change the capture time frame
 			this.WebCamCapture.TimeToCapture_milliseconds = 2;
@@ -95,14 +96,9 @@ namespace FaceDetection
 
 		#region EventActions
 
-		private void CatchPicture_button_Click(object sender, EventArgs e)
-		{
-			this.fixedPicture.Image = _currentWebCamImage;
-		}
-
 		private void WebCamCapture_ImageCaptured(object source, WebCam_Capture.WebcamEventArgs e)
 		{
-			this.webCamPicture.Image = e.WebCamImage;
+			this.webCamPicture.Image = DrawingHelper.FixedSize(e.WebCamImage, webCamPicture.Width, webCamPicture.Height, true);
 			_currentWebCamImage = (Image)e.WebCamImage.Clone();
 			DrawStartPositionBorders(e.WebCamImage);
 		}
@@ -110,6 +106,7 @@ namespace FaceDetection
 		private void Calibrate_btn_Click(object sender, EventArgs e)
 		{
 			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)_currentWebCamImage);
+			_currentWebCamImage.Save(String.Format("Images/Image{0}.jpg", counterImage++));
 			DetectionResult detectionResult = _detectionService.GetDetectionResult(imageFrame);
 			if (detectionResult.Status == DetectionStatus.Success)
 			{
@@ -121,12 +118,8 @@ namespace FaceDetection
 				});
 				ChangeCalibrationButtonsParameters();
 				AnglesLogic(detectionResult, imageFrame);
+				DrawDetectedObjects(detectionResult, imageFrame);
 				fixedPicture.Image = imageFrame.Bitmap;
-			}
-			if (_screenCalibrationHelper.IsCalibrated)
-			{
-				//Recalculate calibrated coordinates based on NoseBridge shifting.
-				_calibrationService.RecalculateCalibration();
 			}
 		}
 
@@ -156,30 +149,24 @@ namespace FaceDetection
 
 		private void Analize_btn_Click(object sender, EventArgs e)
 		{
-			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)this.fixedPicture.Image);
+			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)this._currentWebCamImage);
 			DetectionResult detectionResult = _detectionService.GetDetectionResult(imageFrame);
 			if (detectionResult.Status == DetectionStatus.Success)
 			{
 				AnglesLogic(detectionResult, imageFrame);
 				ViewDetectionLogic(detectionResult, imageFrame);
+				DrawDetectedObjects(detectionResult, imageFrame);
 				fixedPicture.Image = imageFrame.Bitmap;
 			}
 		}
 
-		private void AnglesLogic(DetectionResult detectionResult, Image<Bgr, Byte> imageFrame)
+		private void DrawDetectedObjects(DetectionResult detectionResult, Image<Bgr, Byte> imageFrame)
 		{
 			LineSegment2D lineBetweenEyes = new LineSegment2D(detectionResult.EyeEdgesPair.LeftEye, detectionResult.EyeEdgesPair.RightEye);
 			LineSegment2D leftEyeToMouth = new LineSegment2D(detectionResult.EyeEdgesPair.LeftEye, detectionResult.MouthCenterPoint);
 			LineSegment2D rightEyeToMouth = new LineSegment2D(detectionResult.EyeEdgesPair.RightEye, detectionResult.MouthCenterPoint);
-
 			Point bridgeNosePoint = detectionResult.BridgeNosePoint;
 			Point pointBetweenEyes = lineBetweenEyes.MidPoint();
-
-			double sideLongTilt = FaceRotation.GetSideLongTilt(detectionResult.EyeEdgesPair);
-			double rotationAroundVerticalOx = FaceRotation.GetRotationAroundVertical(pointBetweenEyes, bridgeNosePoint, lineBetweenEyes);
-			double backForthAngle = FaceRotation.GetBackForthTilt(detectionResult.MouthCenterPoint, bridgeNosePoint, lineBetweenEyes);
-
-			DisplayAnglesValues(sideLongTilt, rotationAroundVerticalOx, backForthAngle);
 			DrawingHelper.DrawDetectedObjects(imageFrame, detectionResult);
 
 			DrawingHelper.DrawLines(new List<LineSegment2D>()
@@ -191,14 +178,31 @@ namespace FaceDetection
 			DrawingHelper.DrawPoint(pointBetweenEyes, imageFrame, Color.Red);
 		}
 
+		private void AnglesLogic(DetectionResult detectionResult, Image<Bgr, Byte> imageFrame)
+		{
+			LineSegment2D lineBetweenEyes = new LineSegment2D(detectionResult.EyeEdgesPair.LeftEye, detectionResult.EyeEdgesPair.RightEye);
+			Point bridgeNosePoint = detectionResult.BridgeNosePoint;
+			Point pointBetweenEyes = lineBetweenEyes.MidPoint();
+
+			double sideLongTilt = FaceRotation.GetSideLongTilt(detectionResult.EyeEdgesPair);
+			double rotationAroundVerticalOx = FaceRotation.GetRotationAroundVertical(pointBetweenEyes, bridgeNosePoint, lineBetweenEyes);
+			double backForthAngle = FaceRotation.GetBackForthTilt(detectionResult.MouthCenterPoint, bridgeNosePoint, lineBetweenEyes);
+			DisplayAnglesValues(sideLongTilt, rotationAroundVerticalOx, backForthAngle);
+		}
+
 		private void ViewDetectionLogic(DetectionResult detectionResult, Image<Bgr, Byte> imageFrame)
 		{
+			Point rightEye = detectionResult.EyeCentersPair.RightEye;
+			RecalculateCoordinates(detectionResult, ref rightEye);
+			
+			//draw detected eye poit 
+			DrawingHelper.DrawPoint(rightEye, imageFrame, Color.Blue);
 			//draw all calibrated points
-			DrawingHelper.DrawPoints(_calibrationService.CalibrationInfoList.Select(item => item.EyePoint), imageFrame, Color.Chartreuse);
+			DrawingHelper.DrawPoints(_calibrationService.CalibrationInfoList.Select(item => item.EyePoint), imageFrame, Color.DarkViolet);
 			//draw base line
 			DrawingHelper.DrawLine(_calibrationService.FBaseLine, imageFrame, Color.Crimson);
 
-			Point rightEye = detectionResult.EyeCentersPair.RightEye;
+			
 			double eyePointAngle = _calibrationService.GetFLineAngle(rightEye);
 			double eyePointRadius = new LineSegment2D(rightEye, _calibrationService.FCenterPoint).Length;
 			PolarCoordinate eyePolarCoordinate = new PolarCoordinate()
@@ -207,7 +211,12 @@ namespace FaceDetection
 				Radius = eyePointRadius,
 			};
 			double screenAngle = _calibrationService.GetScreenAngle(eyePolarCoordinate);
-			this.fiF.Text = eyePointAngle.ToString();
+		}
+
+		private void RecalculateCoordinates(DetectionResult detectionResult, ref Point rightEye)
+		{
+			_calibrationService.RecalculateCalibration();
+			rightEye = _calibrationService.RecalculateCalibratedPoint(detectionResult.BridgeNosePoint, rightEye);
 		}
 	}
 }

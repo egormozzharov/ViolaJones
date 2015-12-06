@@ -174,15 +174,20 @@ namespace FaceDetection.Implementations
 		/// </summary>
 		public void RecalculateCalibration()
 		{
-			//CalibrationItem centerCalibrationItem = CalibrationInfoList.Last();
-			//Point centerNoseBridgeAbsolute = centerCalibrationItem.BridgeCoordinatesAbsolute;
-			//foreach (CalibrationItem item in CalibrationInfoList)
-			//{
-			//	Point bridgeNoseAbsolute = item.BridgeCoordinatesAbsolute;
-			//	Point delta = new Point(bridgeNoseAbsolute.X - centerNoseBridgeAbsolute.X, bridgeNoseAbsolute.Y - centerNoseBridgeAbsolute.Y);
+			foreach (CalibrationItem item in CalibrationInfoList)
+			{
+				Point eyePoint = item.EyePoint;
+				item.EyePoint = RecalculateCalibratedPoint(item.BridgeCoordinatesAbsolute, eyePoint);
+			}
+		}
 
-
-			//}
+		public Point RecalculateCalibratedPoint(Point bridgeNose, Point eyePoint)
+		{
+			CalibrationItem centerCalibrationItem = CalibrationInfoList.Last();
+			Point centerNoseBridge = centerCalibrationItem.BridgeCoordinatesAbsolute;
+			Point delta = new Point(bridgeNose.X - centerNoseBridge.X, bridgeNose.Y - centerNoseBridge.Y);
+			eyePoint = new Point(eyePoint.X - delta.X, eyePoint.Y + delta.Y);
+			return eyePoint;
 		}
 	}
 }

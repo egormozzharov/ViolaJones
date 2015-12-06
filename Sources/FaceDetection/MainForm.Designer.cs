@@ -31,7 +31,6 @@
 			this.WebCamCapture = new WebCam_Capture.WebCamCapture();
 			this.fixedPicture = new System.Windows.Forms.PictureBox();
 			this.panel2 = new System.Windows.Forms.Panel();
-			this.catchPicture_button = new System.Windows.Forms.Button();
 			this.webCamPicture = new System.Windows.Forms.PictureBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.sideLongTiltLabel = new System.Windows.Forms.Label();
@@ -43,13 +42,13 @@
 			this.label3 = new System.Windows.Forms.Label();
 			this.backForthAngleLabel = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
+			this.fiF = new System.Windows.Forms.Label();
+			this.label4 = new System.Windows.Forms.Label();
 			this.ParentPanel = new System.Windows.Forms.Panel();
 			this.startCalibration_btn = new System.Windows.Forms.Button();
 			this.saveCalibration_btn = new System.Windows.Forms.Button();
 			this.analize_btn = new System.Windows.Forms.Button();
 			this.getCalibrationPoint_btn = new System.Windows.Forms.Button();
-			this.label4 = new System.Windows.Forms.Label();
-			this.fiF = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.webCamPicture)).BeginInit();
@@ -82,21 +81,11 @@
 			// 
 			// panel2
 			// 
-			this.panel2.Controls.Add(this.catchPicture_button);
+			this.panel2.Controls.Add(this.analize_btn);
 			this.panel2.Location = new System.Drawing.Point(18, 407);
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(917, 82);
 			this.panel2.TabIndex = 14;
-			// 
-			// catchPicture_button
-			// 
-			this.catchPicture_button.Location = new System.Drawing.Point(16, 19);
-			this.catchPicture_button.Name = "catchPicture_button";
-			this.catchPicture_button.Size = new System.Drawing.Size(431, 45);
-			this.catchPicture_button.TabIndex = 1;
-			this.catchPicture_button.Text = "Catch";
-			this.catchPicture_button.UseVisualStyleBackColor = true;
-			this.catchPicture_button.Click += new System.EventHandler(this.CatchPicture_button_Click);
 			// 
 			// webCamPicture
 			// 
@@ -199,6 +188,23 @@
 			this.panel1.Size = new System.Drawing.Size(910, 55);
 			this.panel1.TabIndex = 34;
 			// 
+			// fiF
+			// 
+			this.fiF.AutoSize = true;
+			this.fiF.Location = new System.Drawing.Point(84, 13);
+			this.fiF.Name = "fiF";
+			this.fiF.Size = new System.Drawing.Size(0, 13);
+			this.fiF.TabIndex = 35;
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(13, 13);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(68, 13);
+			this.label4.TabIndex = 34;
+			this.label4.Text = "fiFrameAngle";
+			// 
 			// ParentPanel
 			// 
 			this.ParentPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
@@ -206,7 +212,6 @@
 			this.ParentPanel.Controls.Add(this.saveCalibration_btn);
 			this.ParentPanel.Controls.Add(this.panel1);
 			this.ParentPanel.Controls.Add(this.fixedPicture);
-			this.ParentPanel.Controls.Add(this.analize_btn);
 			this.ParentPanel.Controls.Add(this.webCamPicture);
 			this.ParentPanel.Controls.Add(this.panel2);
 			this.ParentPanel.Location = new System.Drawing.Point(12, 12);
@@ -237,9 +242,9 @@
 			// 
 			// analize_btn
 			// 
-			this.analize_btn.Location = new System.Drawing.Point(433, 562);
+			this.analize_btn.Location = new System.Drawing.Point(111, 23);
 			this.analize_btn.Name = "analize_btn";
-			this.analize_btn.Size = new System.Drawing.Size(90, 38);
+			this.analize_btn.Size = new System.Drawing.Size(207, 38);
 			this.analize_btn.TabIndex = 37;
 			this.analize_btn.Text = "Analize";
 			this.analize_btn.UseVisualStyleBackColor = true;
@@ -255,23 +260,6 @@
 			this.getCalibrationPoint_btn.UseVisualStyleBackColor = true;
 			this.getCalibrationPoint_btn.Visible = false;
 			this.getCalibrationPoint_btn.Click += new System.EventHandler(this.Calibrate_btn_Click);
-			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(13, 13);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(68, 13);
-			this.label4.TabIndex = 34;
-			this.label4.Text = "fiFrameAngle";
-			// 
-			// fiF
-			// 
-			this.fiF.AutoSize = true;
-			this.fiF.Location = new System.Drawing.Point(84, 13);
-			this.fiF.Name = "fiF";
-			this.fiF.Size = new System.Drawing.Size(0, 13);
-			this.fiF.TabIndex = 35;
 			// 
 			// MainForm
 			// 
@@ -301,7 +289,6 @@
 		private System.Windows.Forms.PictureBox fixedPicture;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.PictureBox webCamPicture;
-		private System.Windows.Forms.Button catchPicture_button;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label sideLongTiltLabel;
 		private System.Windows.Forms.Label dexpected;
