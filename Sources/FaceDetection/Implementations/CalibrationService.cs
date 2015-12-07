@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using Emgu.CV.Structure;
+using FaceDetection.Helpers;
 using FaceDetection.Models;
 
 namespace FaceDetection.Implementations
@@ -11,10 +11,10 @@ namespace FaceDetection.Implementations
 	{
 		private readonly SerializationService _serializationService;
 
-		public CalibrationService(string calibrationFileName)
+		public CalibrationService()
 		{
 			_serializationService = new SerializationService();
-			CalibrationInfoList = TryLoadCalibrationList(calibrationFileName);
+			CalibrationInfoList = GetCalibrationList();
 		}
 
 		public void SaveCalibrationList(string calibrationFileName)
@@ -22,13 +22,73 @@ namespace FaceDetection.Implementations
 			_serializationService.Serialize(CalibrationInfoList, calibrationFileName);
 		}
 
-		private IList<CalibrationItem> TryLoadCalibrationList(string calibrationFilePath)
+		private IList<CalibrationItem> GetCalibrationList()
 		{
+			Point bridge = new Point(345, 240);
 			IList<CalibrationItem> result = new List<CalibrationItem>();
-			if (File.Exists(calibrationFilePath))
+			result.Add(new CalibrationItem()
 			{
-				result = (IList<CalibrationItem>)_serializationService.Deserialize(calibrationFilePath);
-			}
+				BridgeCoordinatesAbsolute = bridge,
+				RightEyePoint = new Point(399, 235),
+				LeftEyePoint = new Point(290, 233),
+				ScreenPoint = ScreenCalibrationHelper.ScreenCalibrationPoints[0],
+			});
+			result.Add(new CalibrationItem()
+			{
+				BridgeCoordinatesAbsolute = bridge,
+				RightEyePoint = new Point(399, 232),
+				LeftEyePoint = new Point(288, 230),
+				ScreenPoint = ScreenCalibrationHelper.ScreenCalibrationPoints[1],
+			});
+			result.Add(new CalibrationItem()
+			{
+				BridgeCoordinatesAbsolute = bridge,
+				RightEyePoint = new Point(407, 234),
+				LeftEyePoint = new Point(296, 232),
+				ScreenPoint = ScreenCalibrationHelper.ScreenCalibrationPoints[2],
+			});
+			result.Add(new CalibrationItem()
+			{
+				BridgeCoordinatesAbsolute = bridge,
+				RightEyePoint = new Point(417, 235),
+				LeftEyePoint = new Point(305, 234),
+				ScreenPoint = ScreenCalibrationHelper.ScreenCalibrationPoints[3],
+			});
+			result.Add(new CalibrationItem()
+			{
+				BridgeCoordinatesAbsolute = bridge,
+				RightEyePoint = new Point(416, 240),
+				LeftEyePoint = new Point(304, 239),
+				ScreenPoint = ScreenCalibrationHelper.ScreenCalibrationPoints[4],
+			});
+			result.Add(new CalibrationItem()
+			{
+				BridgeCoordinatesAbsolute = bridge,
+				RightEyePoint = new Point(415, 242),
+				LeftEyePoint = new Point(303, 241),
+				ScreenPoint = ScreenCalibrationHelper.ScreenCalibrationPoints[5],
+			});
+			result.Add(new CalibrationItem()
+			{
+				BridgeCoordinatesAbsolute = bridge,
+				RightEyePoint = new Point(406, 242),
+				LeftEyePoint = new Point(295, 241),
+				ScreenPoint = ScreenCalibrationHelper.ScreenCalibrationPoints[6],
+			});
+			result.Add(new CalibrationItem()
+			{
+				BridgeCoordinatesAbsolute = bridge,
+				RightEyePoint = new Point(401, 242),
+				LeftEyePoint = new Point(291, 241),
+				ScreenPoint = ScreenCalibrationHelper.ScreenCalibrationPoints[7],
+			});
+			result.Add(new CalibrationItem()
+			{
+				BridgeCoordinatesAbsolute = bridge,
+				RightEyePoint = new Point(410, 240),
+				LeftEyePoint = new Point(298, 240),
+				ScreenPoint = ScreenCalibrationHelper.ScreenCalibrationPoints[8],
+			});
 			return result;
 		}
 
@@ -42,12 +102,12 @@ namespace FaceDetection.Implementations
 
 		public Point FCenterPoint
 		{
-			get { return CalibrationInfoList.Last().EyePoint; }
+			get { return CalibrationInfoList.Last().RightEyePoint; }
 		}
 
 		public Point FPoint1
 		{
-			get { return CalibrationInfoList.First().EyePoint; }
+			get { return CalibrationInfoList.First().RightEyePoint; }
 		}
 
 
@@ -74,7 +134,7 @@ namespace FaceDetection.Implementations
 				_fPolarCoordinatesWithCorrespondingSCoordinate = new List<PolarCoordinatePair>();
 				foreach (CalibrationItem item in CalibrationInfoList)
 				{
-					Point fPoint = item.EyePoint;
+					Point fPoint = item.RightEyePoint;
 					Point sPoint = item.ScreenPoint;
 					_fPolarCoordinatesWithCorrespondingSCoordinate.Add(new PolarCoordinatePair()
 					{
@@ -165,7 +225,7 @@ namespace FaceDetection.Implementations
 			{
 				return FsLess;
 			}
-			double result = ((Ff - FfLess)/(FfBig - FfLess))*(FsBig - FsLess) + FsBig;
+			double result = ((Ff - FfLess)/(FfBig - FfLess))*(FsBig - FsLess) + FsLess;
 			return result;
 		}
 
@@ -176,8 +236,8 @@ namespace FaceDetection.Implementations
 		{
 			foreach (CalibrationItem item in CalibrationInfoList)
 			{
-				Point eyePoint = item.EyePoint;
-				item.EyePoint = RecalculateCalibratedPoint(item.BridgeCoordinatesAbsolute, eyePoint);
+				Point eyePoint = item.RightEyePoint;
+				item.RightEyePoint = RecalculateCalibratedPoint(item.BridgeCoordinatesAbsolute, eyePoint);
 			}
 		}
 
@@ -186,7 +246,7 @@ namespace FaceDetection.Implementations
 			CalibrationItem centerCalibrationItem = CalibrationInfoList.Last();
 			Point centerNoseBridge = centerCalibrationItem.BridgeCoordinatesAbsolute;
 			Point delta = new Point(bridgeNose.X - centerNoseBridge.X, bridgeNose.Y - centerNoseBridge.Y);
-			eyePoint = new Point(eyePoint.X - delta.X, eyePoint.Y + delta.Y);
+			eyePoint = new Point(eyePoint.X - delta.X, eyePoint.Y - delta.Y);
 			return eyePoint;
 		}
 	}

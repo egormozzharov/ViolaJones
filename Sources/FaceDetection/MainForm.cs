@@ -29,7 +29,7 @@ namespace FaceDetection
 		{
 			InitializeComponent();
 			_detectionService = new DetectionService();
-			_calibrationService = new CalibrationService(CalibrationFileName);
+			_calibrationService = new CalibrationService();
 			_screenCalibrationHelper = new ScreenCalibrationHelper(_calibrationService.CalibrationInfoList);
 
 			SetComponentsSettings();
@@ -44,9 +44,20 @@ namespace FaceDetection
 			}
 		}
 
+		private void DrawCenterCalibratedPoint(Image webCamImage)
+		{
+			CalibrationItem centerCalibrationItem = _calibrationService.CalibrationInfoList.Last();
+			Point rightEye = centerCalibrationItem.RightEyePoint;
+			Point leftEye = centerCalibrationItem.LeftEyePoint;
+			Point bridgeNose = centerCalibrationItem.BridgeCoordinatesAbsolute;
+			DrawingHelper.DrawPoint(webCamImage, rightEye, Color.Blue, 7);
+			DrawingHelper.DrawPoint(webCamImage, leftEye, Color.Blue, 7);
+			DrawingHelper.DrawPoint(webCamImage, bridgeNose, Color.Red, 7);
+			
+		}
+
 		private void SetComponentsSettings()
 		{
-			//this.TopMost = true;
 			this.WindowState = FormWindowState.Maximized;
 
 			this.ParentPanel.Location = new Point(
@@ -86,37 +97,30 @@ namespace FaceDetection
 			this.WebCamCapture.Start(0);
 		}
 
-		private void DrawStartPositionBorders(Image webCamImage)
-		{
-			Graphics g = Graphics.FromImage(webCamImage);
-			g.DrawRectangle(new Pen(Color.Red), new Rectangle(0 + 190, 60, 170, 300));
-			g.DrawLine(new Pen(Color.Red), 190, 160, 190 + 170, 160);
-		}
-
 		#region EventActions
 
 		private void WebCamCapture_ImageCaptured(object source, WebCam_Capture.WebcamEventArgs e)
 		{
-			this.webCamPicture.Image = DrawingHelper.FixedSize(e.WebCamImage, webCamPicture.Width, webCamPicture.Height, true);
+			this.webCamPicture.Image = e.WebCamImage;
 			_currentWebCamImage = (Image)e.WebCamImage.Clone();
-			DrawStartPositionBorders(e.WebCamImage);
+			DrawCenterCalibratedPoint(e.WebCamImage);
 		}
 
 		private void Calibrate_btn_Click(object sender, EventArgs e)
 		{
 			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)_currentWebCamImage);
-			_currentWebCamImage.Save(String.Format("Images/Image{0}.jpg", counterImage++));
+			//_currentWebCamImage.Save(String.Format("Images/Image{0}.jpg", counterImage++));
 			DetectionResult detectionResult = _detectionService.GetDetectionResult(imageFrame);
 			if (detectionResult.Status == DetectionStatus.Success)
 			{
 				_calibrationService.CalibrationInfoList.Add(new CalibrationItem()
 				{
-					EyePoint = detectionResult.EyeCentersPair.RightEye,
+					RightEyePoint = detectionResult.EyeCentersPair.RightEye,
 					ScreenPoint = _screenCalibrationHelper.CurrentScreenCalibrationPoint,
 					BridgeCoordinatesAbsolute = detectionResult.BridgeNosePoint,
 				});
 				ChangeCalibrationButtonsParameters();
-				AnglesLogic(detectionResult, imageFrame);
+				AnglesLogic(detectionResult);
 				DrawDetectedObjects(detectionResult, imageFrame);
 				fixedPicture.Image = imageFrame.Bitmap;
 			}
@@ -148,14 +152,17 @@ namespace FaceDetection
 
 		private void Analize_btn_Click(object sender, EventArgs e)
 		{
+			DrawingHelper.Clear(backgroundPanel);
+			//Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)Image.FromFile(photoPathTextBox.Text));
 			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)this._currentWebCamImage);
 			DetectionResult detectionResult = _detectionService.GetDetectionResult(imageFrame);
 			if (detectionResult.Status == DetectionStatus.Success)
 			{
-				AnglesLogic(detectionResult, imageFrame);
+				AnglesLogic(detectionResult);
 				ViewDetectionLogic(detectionResult, imageFrame);
 				DrawDetectedObjects(detectionResult, imageFrame);
 				fixedPicture.Image = imageFrame.Bitmap;
+				HideParantPanel();
 			}
 		}
 
@@ -177,7 +184,7 @@ namespace FaceDetection
 			DrawingHelper.DrawPoint(pointBetweenEyes, imageFrame, Color.Red);
 		}
 
-		private void AnglesLogic(DetectionResult detectionResult, Image<Bgr, Byte> imageFrame)
+		private void AnglesLogic(DetectionResult detectionResult)
 		{
 			LineSegment2D lineBetweenEyes = new LineSegment2D(detectionResult.EyeEdgesPair.LeftEye, detectionResult.EyeEdgesPair.RightEye);
 			Point bridgeNosePoint = detectionResult.BridgeNosePoint;
@@ -192,14 +199,16 @@ namespace FaceDetection
 		private void ViewDetectionLogic(DetectionResult detectionResult, Image<Bgr, Byte> imageFrame)
 		{
 			Point rightEye = detectionResult.EyeCentersPair.RightEye;
-			RecalculateCoordinates(detectionResult, ref rightEye);
+			//Point rightEye = new Point(407, 233);
+			//RecalculateCoordinates(detectionResult, ref rightEye);
 			
 			//draw detected eye poit 
 			DrawingHelper.DrawPoint(rightEye, imageFrame, Color.Blue);
+			DrawingHelper.DrawPoint(backgroundPanel, rightEye, Color.Brown);
 			//draw all calibrated points
-			DrawingHelper.DrawPoints(_calibrationService.CalibrationInfoList.Select(item => item.EyePoint), imageFrame, Color.DarkViolet);
+			DrawPointsWithColors();
 			//draw base line
-			DrawingHelper.DrawLine(_calibrationService.FBaseLine, imageFrame, Color.Crimson);
+			DrawingHelper.DrawLine(backgroundPanel, _calibrationService.FBaseLine.P1, _calibrationService.FBaseLine.P2, Color.Crimson);
 
 			
 			double eyePointAngle = _calibrationService.GetFLineAngle(rightEye);
@@ -217,9 +226,21 @@ namespace FaceDetection
 				Radius = 200,
 			}, _calibrationService.SCenterPoint);
 			this.SAngleLabel.Text = screenAngle.ToString();
-			DrawingHelper.DrawLine(backgroundPanel, screenPoint, _calibrationService.SCenterPoint);
-			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.SCenterPoint);
-			ParentPanel.Hide();
+			DrawingHelper.DrawLine(backgroundPanel, screenPoint, _calibrationService.SCenterPoint, Color.Red);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.SCenterPoint, Color.Brown);
+		}
+
+		private void DrawPointsWithColors()
+		{
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.CalibrationInfoList[0].RightEyePoint, Color.Red, 1);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.CalibrationInfoList[1].RightEyePoint, Color.Orange, 1);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.CalibrationInfoList[2].RightEyePoint, Color.Yellow, 1);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.CalibrationInfoList[3].RightEyePoint, Color.Green, 1);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.CalibrationInfoList[4].RightEyePoint, Color.LightBlue, 1);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.CalibrationInfoList[5].RightEyePoint, Color.Blue, 1);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.CalibrationInfoList[6].RightEyePoint, Color.Violet, 1);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.CalibrationInfoList[7].RightEyePoint, Color.BlueViolet, 1);
+			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.CalibrationInfoList[8].RightEyePoint, Color.Black, 1);
 		}
 
 		private void RecalculateCoordinates(DetectionResult detectionResult, ref Point rightEye)
@@ -230,7 +251,26 @@ namespace FaceDetection
 
 		private void ShowPanels_btn_Click(object sender, EventArgs e)
 		{
+			ShowParentPanel();
+		}
+
+		private void HidePanels_btn_Click(object sender, EventArgs e)
+		{
+			HideParantPanel();
+		}
+
+		private void HideParantPanel()
+		{
+			this.ParentPanel.Hide();
+			this.ShowPanels_btn.Visible = true;
+			this.HidePanels_btn.Visible = false;
+		}
+
+		private void ShowParentPanel()
+		{
 			this.ParentPanel.Show();
+			this.ShowPanels_btn.Visible = false;
+			this.HidePanels_btn.Visible = true;
 		}
 	}
 }

@@ -6,7 +6,9 @@ namespace FaceDetection.Models
 	[Serializable]
 	public class CalibrationItem
 	{
-		public Point EyePoint { get; set; }
+		public Point RightEyePoint { get; set; }
+
+		public Point LeftEyePoint { get; set; }
 
 		public Point ScreenPoint { get; set; }
 

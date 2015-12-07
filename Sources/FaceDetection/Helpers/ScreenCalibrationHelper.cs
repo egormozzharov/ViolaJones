@@ -39,7 +39,7 @@ namespace FaceDetection.Helpers
 			get { return _calibratoinList.Count == PointsNumber; }
 		}
 
-		private Rectangle Screen
+		private static Rectangle Screen
 		{
 			get
 			{
@@ -47,7 +47,7 @@ namespace FaceDetection.Helpers
 			}
 		}
 
-		private IList<Point> ScreenCalibrationPoints
+		public static IList<Point> ScreenCalibrationPoints
 		{
 			get
 			{
@@ -65,12 +65,12 @@ namespace FaceDetection.Helpers
 			}
 		}
 
-		private int PaddingHeight
+		private static int PaddingHeight
 		{
 			get { return 50; }
 		}
 
-		private int PaddingWidth
+		private static int PaddingWidth
 		{
 			get { return 50; }
 		}
