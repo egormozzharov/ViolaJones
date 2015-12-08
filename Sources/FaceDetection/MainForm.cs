@@ -46,14 +46,16 @@ namespace FaceDetection
 
 		private void DrawCenterCalibratedPoint(Image webCamImage)
 		{
-			CalibrationItem centerCalibrationItem = _calibrationService.CalibrationInfoList.Last();
-			Point rightEye = centerCalibrationItem.RightEyePoint;
-			Point leftEye = centerCalibrationItem.LeftEyePoint;
-			Point bridgeNose = centerCalibrationItem.BridgeCoordinatesAbsolute;
-			DrawingHelper.DrawPoint(webCamImage, rightEye, Color.Blue, 7);
-			DrawingHelper.DrawPoint(webCamImage, leftEye, Color.Blue, 7);
-			DrawingHelper.DrawPoint(webCamImage, bridgeNose, Color.Red, 7);
-			
+			CalibrationItem centerCalibrationItem = _calibrationService.CalibrationInfoList.LastOrDefault();
+			if (centerCalibrationItem != null)
+			{
+				Point rightEye = centerCalibrationItem.RightEyePoint;
+				Point leftEye = centerCalibrationItem.LeftEyePoint;
+				Point bridgeNose = centerCalibrationItem.BridgeCoordinatesAbsolute;
+				DrawingHelper.DrawPoint(webCamImage, rightEye, Color.Blue, 7);
+				DrawingHelper.DrawPoint(webCamImage, leftEye, Color.Blue, 7);
+				DrawingHelper.DrawPoint(webCamImage, bridgeNose, Color.Red, 7);
+			}
 		}
 
 		private void SetComponentsSettings()
@@ -110,6 +112,7 @@ namespace FaceDetection
 				_calibrationService.CalibrationInfoList.Add(new CalibrationItem()
 				{
 					RightEyePoint = detectionResult.EyeCentersPair.RightEye,
+					LeftEyePoint = detectionResult.EyeCentersPair.LeftEye,
 					ScreenPoint = _screenCalibrationHelper.CurrentScreenCalibrationPoint,
 					BridgeCoordinatesAbsolute = detectionResult.BridgeNosePoint,
 				});

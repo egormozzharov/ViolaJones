@@ -56,11 +56,13 @@
 			this.SAngleLabel = new System.Windows.Forms.Label();
 			this.ShowPanels_btn = new System.Windows.Forms.Button();
 			this.label5 = new System.Windows.Forms.Label();
+			this.panel2 = new System.Windows.Forms.Panel();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.webCamPicture)).BeginInit();
 			this.panel1.SuspendLayout();
 			this.ParentPanel.SuspendLayout();
 			this.backgroundPanel.SuspendLayout();
+			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// WebCamCapture
@@ -88,7 +90,7 @@
 			// 
 			// analize_btn
 			// 
-			this.analize_btn.Location = new System.Drawing.Point(300, 543);
+			this.analize_btn.Location = new System.Drawing.Point(197, 543);
 			this.analize_btn.Name = "analize_btn";
 			this.analize_btn.Size = new System.Drawing.Size(96, 29);
 			this.analize_btn.TabIndex = 37;
@@ -166,7 +168,7 @@
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(626, 29);
+			this.label3.Location = new System.Drawing.Point(480, 26);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(76, 13);
 			this.label3.TabIndex = 32;
@@ -176,7 +178,7 @@
 			// 
 			this.backForthAngleLabel.AutoSize = true;
 			this.backForthAngleLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.backForthAngleLabel.Location = new System.Drawing.Point(725, 29);
+			this.backForthAngleLabel.Location = new System.Drawing.Point(570, 23);
 			this.backForthAngleLabel.Name = "backForthAngleLabel";
 			this.backForthAngleLabel.Size = new System.Drawing.Size(0, 13);
 			this.backForthAngleLabel.TabIndex = 33;
@@ -192,23 +194,19 @@
 			this.panel1.Controls.Add(this.sideLongTiltLabel);
 			this.panel1.Location = new System.Drawing.Point(3, 482);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(910, 55);
+			this.panel1.Size = new System.Drawing.Size(640, 55);
 			this.panel1.TabIndex = 34;
 			// 
 			// ParentPanel
 			// 
 			this.ParentPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
-			this.ParentPanel.Controls.Add(this.button1);
-			this.ParentPanel.Controls.Add(this.label6);
-			this.ParentPanel.Controls.Add(this.label4);
-			this.ParentPanel.Controls.Add(this.yDetectedEye);
-			this.ParentPanel.Controls.Add(this.xDetectedEye);
 			this.ParentPanel.Controls.Add(this.startCalibration_btn);
 			this.ParentPanel.Controls.Add(this.analize_btn);
 			this.ParentPanel.Controls.Add(this.saveCalibration_btn);
 			this.ParentPanel.Controls.Add(this.panel1);
 			this.ParentPanel.Controls.Add(this.fixedPicture);
 			this.ParentPanel.Controls.Add(this.webCamPicture);
+			this.ParentPanel.Controls.Add(this.panel2);
 			this.ParentPanel.Location = new System.Drawing.Point(135, 24);
 			this.ParentPanel.MinimumSize = new System.Drawing.Size(400, 400);
 			this.ParentPanel.Name = "ParentPanel";
@@ -217,7 +215,7 @@
 			// 
 			// button1
 			// 
-			this.button1.Location = new System.Drawing.Point(557, 543);
+			this.button1.Location = new System.Drawing.Point(196, 6);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(96, 29);
 			this.button1.TabIndex = 44;
@@ -228,7 +226,7 @@
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(474, 551);
+			this.label6.Location = new System.Drawing.Point(124, 15);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(12, 13);
 			this.label6.TabIndex = 43;
@@ -237,7 +235,7 @@
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(402, 551);
+			this.label4.Location = new System.Drawing.Point(50, 15);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(12, 13);
 			this.label4.TabIndex = 42;
@@ -245,7 +243,7 @@
 			// 
 			// yDetectedEye
 			// 
-			this.yDetectedEye.Location = new System.Drawing.Point(492, 547);
+			this.yDetectedEye.Location = new System.Drawing.Point(142, 10);
 			this.yDetectedEye.Multiline = true;
 			this.yDetectedEye.Name = "yDetectedEye";
 			this.yDetectedEye.Size = new System.Drawing.Size(48, 21);
@@ -254,7 +252,7 @@
 			// 
 			// xDetectedEye
 			// 
-			this.xDetectedEye.Location = new System.Drawing.Point(420, 547);
+			this.xDetectedEye.Location = new System.Drawing.Point(70, 11);
 			this.xDetectedEye.Multiline = true;
 			this.xDetectedEye.Name = "xDetectedEye";
 			this.xDetectedEye.Size = new System.Drawing.Size(48, 20);
@@ -345,6 +343,18 @@
 			this.label5.TabIndex = 1;
 			this.label5.Text = "SAngle";
 			// 
+			// panel2
+			// 
+			this.panel2.Controls.Add(this.button1);
+			this.panel2.Controls.Add(this.xDetectedEye);
+			this.panel2.Controls.Add(this.label4);
+			this.panel2.Controls.Add(this.label6);
+			this.panel2.Controls.Add(this.yDetectedEye);
+			this.panel2.Location = new System.Drawing.Point(344, 534);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(299, 38);
+			this.panel2.TabIndex = 45;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -361,9 +371,10 @@
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			this.ParentPanel.ResumeLayout(false);
-			this.ParentPanel.PerformLayout();
 			this.backgroundPanel.ResumeLayout(false);
 			this.backgroundPanel.PerformLayout();
+			this.panel2.ResumeLayout(false);
+			this.panel2.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -398,6 +409,7 @@
 		private System.Windows.Forms.TextBox yDetectedEye;
 		private System.Windows.Forms.TextBox xDetectedEye;
 		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.Panel panel2;
     }
 }
 
