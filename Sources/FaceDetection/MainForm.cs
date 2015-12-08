@@ -213,10 +213,10 @@ namespace FaceDetection
 			Point rightEye = detectionResult.EyeCentersPair.RightEye;
 			//RecalculateCoordinates(detectionResult, ref rightEye);
 			
-			//draw detected eye poit 
-			DrawingHelper.DrawPoint(backgroundPanel, rightEye, Color.Brown, 1);
 			//draw all calibrated points
 			DrawPointsWithColors();
+			//draw detected eye poit 
+			DrawingHelper.DrawPoint(backgroundPanel, rightEye, Color.Brown, 1);
 			//draw base line
 			DrawingHelper.DrawLine(backgroundPanel, _calibrationService.FBaseLine.P1, _calibrationService.FBaseLine.P2, Color.Crimson);
 

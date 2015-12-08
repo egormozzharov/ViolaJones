@@ -185,7 +185,7 @@ namespace FaceDetection.Implementations
 			PolarCoordinate closestCoordinate = SPolarCoordinates.First(p => p.Angle == minAngle);
 			foreach (PolarCoordinate sPoint in SPolarCoordinates)
 			{
-				if ((sPoint.Angle <= sAngle) && (sPoint.Angle > closestCoordinate.Angle))
+				if ((sPoint.Angle < sAngle) && (sPoint.Angle > closestCoordinate.Angle))
 				{
 					closestCoordinate = sPoint;
 				}
