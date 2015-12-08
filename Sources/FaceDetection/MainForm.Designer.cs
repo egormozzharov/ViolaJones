@@ -42,18 +42,20 @@
 			this.label3 = new System.Windows.Forms.Label();
 			this.backForthAngleLabel = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.fiF = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
 			this.ParentPanel = new System.Windows.Forms.Panel();
-			this.photoPathTextBox = new System.Windows.Forms.TextBox();
+			this.button1 = new System.Windows.Forms.Button();
+			this.label6 = new System.Windows.Forms.Label();
+			this.label4 = new System.Windows.Forms.Label();
+			this.yDetectedEye = new System.Windows.Forms.TextBox();
+			this.xDetectedEye = new System.Windows.Forms.TextBox();
 			this.startCalibration_btn = new System.Windows.Forms.Button();
 			this.saveCalibration_btn = new System.Windows.Forms.Button();
 			this.getCalibrationPoint_btn = new System.Windows.Forms.Button();
 			this.backgroundPanel = new System.Windows.Forms.Panel();
+			this.HidePanels_btn = new System.Windows.Forms.Button();
 			this.SAngleLabel = new System.Windows.Forms.Label();
 			this.ShowPanels_btn = new System.Windows.Forms.Button();
 			this.label5 = new System.Windows.Forms.Label();
-			this.HidePanels_btn = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.fixedPicture)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.webCamPicture)).BeginInit();
 			this.panel1.SuspendLayout();
@@ -86,9 +88,9 @@
 			// 
 			// analize_btn
 			// 
-			this.analize_btn.Location = new System.Drawing.Point(334, 540);
+			this.analize_btn.Location = new System.Drawing.Point(300, 543);
 			this.analize_btn.Name = "analize_btn";
-			this.analize_btn.Size = new System.Drawing.Size(96, 38);
+			this.analize_btn.Size = new System.Drawing.Size(96, 29);
 			this.analize_btn.TabIndex = 37;
 			this.analize_btn.Text = "Analize";
 			this.analize_btn.UseVisualStyleBackColor = true;
@@ -182,8 +184,6 @@
 			// 
 			// panel1
 			// 
-			this.panel1.Controls.Add(this.fiF);
-			this.panel1.Controls.Add(this.label4);
 			this.panel1.Controls.Add(this.rotationAroundVerticalOxLabel);
 			this.panel1.Controls.Add(this.backForthAngleLabel);
 			this.panel1.Controls.Add(this.label2);
@@ -195,27 +195,14 @@
 			this.panel1.Size = new System.Drawing.Size(910, 55);
 			this.panel1.TabIndex = 34;
 			// 
-			// fiF
-			// 
-			this.fiF.AutoSize = true;
-			this.fiF.Location = new System.Drawing.Point(84, 13);
-			this.fiF.Name = "fiF";
-			this.fiF.Size = new System.Drawing.Size(0, 13);
-			this.fiF.TabIndex = 35;
-			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(13, 13);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(68, 13);
-			this.label4.TabIndex = 34;
-			this.label4.Text = "fiFrameAngle";
-			// 
 			// ParentPanel
 			// 
 			this.ParentPanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
-			this.ParentPanel.Controls.Add(this.photoPathTextBox);
+			this.ParentPanel.Controls.Add(this.button1);
+			this.ParentPanel.Controls.Add(this.label6);
+			this.ParentPanel.Controls.Add(this.label4);
+			this.ParentPanel.Controls.Add(this.yDetectedEye);
+			this.ParentPanel.Controls.Add(this.xDetectedEye);
 			this.ParentPanel.Controls.Add(this.startCalibration_btn);
 			this.ParentPanel.Controls.Add(this.analize_btn);
 			this.ParentPanel.Controls.Add(this.saveCalibration_btn);
@@ -228,17 +215,55 @@
 			this.ParentPanel.Size = new System.Drawing.Size(1108, 584);
 			this.ParentPanel.TabIndex = 35;
 			// 
-			// photoPathTextBox
+			// button1
 			// 
-			this.photoPathTextBox.Location = new System.Drawing.Point(210, 540);
-			this.photoPathTextBox.Name = "photoPathTextBox";
-			this.photoPathTextBox.Size = new System.Drawing.Size(100, 20);
-			this.photoPathTextBox.TabIndex = 38;
-			this.photoPathTextBox.Text = "Images/Image1.jpg";
+			this.button1.Location = new System.Drawing.Point(557, 543);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(96, 29);
+			this.button1.TabIndex = 44;
+			this.button1.Text = "Test";
+			this.button1.UseVisualStyleBackColor = true;
+			this.button1.Click += new System.EventHandler(this.TestButton_Click);
+			// 
+			// label6
+			// 
+			this.label6.AutoSize = true;
+			this.label6.Location = new System.Drawing.Point(474, 551);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(12, 13);
+			this.label6.TabIndex = 43;
+			this.label6.Text = "y";
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(402, 551);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(12, 13);
+			this.label4.TabIndex = 42;
+			this.label4.Text = "x";
+			// 
+			// yDetectedEye
+			// 
+			this.yDetectedEye.Location = new System.Drawing.Point(492, 547);
+			this.yDetectedEye.Multiline = true;
+			this.yDetectedEye.Name = "yDetectedEye";
+			this.yDetectedEye.Size = new System.Drawing.Size(48, 21);
+			this.yDetectedEye.TabIndex = 41;
+			this.yDetectedEye.Text = "233";
+			// 
+			// xDetectedEye
+			// 
+			this.xDetectedEye.Location = new System.Drawing.Point(420, 547);
+			this.xDetectedEye.Multiline = true;
+			this.xDetectedEye.Name = "xDetectedEye";
+			this.xDetectedEye.Size = new System.Drawing.Size(48, 20);
+			this.xDetectedEye.TabIndex = 40;
+			this.xDetectedEye.Text = "407";
 			// 
 			// startCalibration_btn
 			// 
-			this.startCalibration_btn.Location = new System.Drawing.Point(3, 540);
+			this.startCalibration_btn.Location = new System.Drawing.Point(3, 543);
 			this.startCalibration_btn.Name = "startCalibration_btn";
 			this.startCalibration_btn.Size = new System.Drawing.Size(90, 29);
 			this.startCalibration_btn.TabIndex = 38;
@@ -248,9 +273,9 @@
 			// 
 			// saveCalibration_btn
 			// 
-			this.saveCalibration_btn.Location = new System.Drawing.Point(101, 540);
+			this.saveCalibration_btn.Location = new System.Drawing.Point(99, 543);
 			this.saveCalibration_btn.Name = "saveCalibration_btn";
-			this.saveCalibration_btn.Size = new System.Drawing.Size(87, 30);
+			this.saveCalibration_btn.Size = new System.Drawing.Size(87, 29);
 			this.saveCalibration_btn.TabIndex = 39;
 			this.saveCalibration_btn.Text = "saveCalibration";
 			this.saveCalibration_btn.UseVisualStyleBackColor = true;
@@ -282,10 +307,20 @@
 			this.backgroundPanel.Size = new System.Drawing.Size(1298, 742);
 			this.backgroundPanel.TabIndex = 40;
 			// 
+			// HidePanels_btn
+			// 
+			this.HidePanels_btn.Location = new System.Drawing.Point(26, 658);
+			this.HidePanels_btn.Name = "HidePanels_btn";
+			this.HidePanels_btn.Size = new System.Drawing.Size(90, 37);
+			this.HidePanels_btn.TabIndex = 37;
+			this.HidePanels_btn.Text = "HidePanels";
+			this.HidePanels_btn.UseVisualStyleBackColor = true;
+			this.HidePanels_btn.Click += new System.EventHandler(this.HidePanels_btn_Click);
+			// 
 			// SAngleLabel
 			// 
 			this.SAngleLabel.AutoSize = true;
-			this.SAngleLabel.Location = new System.Drawing.Point(80, 632);
+			this.SAngleLabel.Location = new System.Drawing.Point(179, 670);
 			this.SAngleLabel.Name = "SAngleLabel";
 			this.SAngleLabel.Size = new System.Drawing.Size(0, 13);
 			this.SAngleLabel.TabIndex = 2;
@@ -304,21 +339,11 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(23, 632);
+			this.label5.Location = new System.Drawing.Point(122, 670);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(41, 13);
 			this.label5.TabIndex = 1;
 			this.label5.Text = "SAngle";
-			// 
-			// HidePanels_btn
-			// 
-			this.HidePanels_btn.Location = new System.Drawing.Point(26, 658);
-			this.HidePanels_btn.Name = "HidePanels_btn";
-			this.HidePanels_btn.Size = new System.Drawing.Size(90, 37);
-			this.HidePanels_btn.TabIndex = 37;
-			this.HidePanels_btn.Text = "HidePanels";
-			this.HidePanels_btn.UseVisualStyleBackColor = true;
-			this.HidePanels_btn.Click += new System.EventHandler(this.HidePanels_btn_Click);
 			// 
 			// MainForm
 			// 
@@ -363,14 +388,16 @@
 		private System.Windows.Forms.Button analize_btn;
 		private System.Windows.Forms.Button startCalibration_btn;
 		private System.Windows.Forms.Button saveCalibration_btn;
-		private System.Windows.Forms.Label fiF;
-		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Panel backgroundPanel;
-		private System.Windows.Forms.TextBox photoPathTextBox;
 		private System.Windows.Forms.Label SAngleLabel;
 		private System.Windows.Forms.Button ShowPanels_btn;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Button HidePanels_btn;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.TextBox yDetectedEye;
+		private System.Windows.Forms.TextBox xDetectedEye;
+		private System.Windows.Forms.Button button1;
     }
 }
 

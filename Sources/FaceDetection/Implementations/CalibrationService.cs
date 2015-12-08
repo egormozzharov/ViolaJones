@@ -179,13 +179,41 @@ namespace FaceDetection.Implementations
 			return MathHelper.AngleBetweenLines(SBaseLine, new LineSegment2D(SCenterPoint, sPoint));
 		}
 
-		public PolarCoordinate GetClosestLessFPolarCoordinate(PolarCoordinate polarCoordinate)
+		public PolarCoordinate GetClosestLessSPolarCoordinate(double sAngle)
+		{
+			double minAngle = SPolarCoordinates.Min(s => s.Angle);
+			PolarCoordinate closestCoordinate = SPolarCoordinates.First(p => p.Angle == minAngle);
+			foreach (PolarCoordinate sPoint in SPolarCoordinates)
+			{
+				if ((sPoint.Angle <= sAngle) && (sPoint.Angle > closestCoordinate.Angle))
+				{
+					closestCoordinate = sPoint;
+				}
+			}
+			return closestCoordinate;
+		}
+
+		public PolarCoordinate GetClosestBiggerSPolarCoordinate(double sAngle)
+		{
+			double maxAngle = SPolarCoordinates.Max(s => s.Angle);
+			PolarCoordinate closestCoordinate = SPolarCoordinates.First(p => p.Angle == maxAngle);
+			foreach (PolarCoordinate sPoint in SPolarCoordinates)
+			{
+				if ((sPoint.Angle >= sAngle) && (sPoint.Angle < closestCoordinate.Angle))
+				{
+					closestCoordinate = sPoint;
+				}
+			}
+			return closestCoordinate;
+		}
+
+		public PolarCoordinate GetClosestLessFPolarCoordinate(double fAngle)
 		{
 			double minAngle = FPolarCoordinates.Min(f => f.Angle);
 			PolarCoordinate closestCoordinate = FPolarCoordinates.First(p => p.Angle == minAngle);
 			foreach (PolarCoordinate fPoint in FPolarCoordinates)
 			{
-				if ((fPoint.Angle <= polarCoordinate.Angle)  && (fPoint.Angle > closestCoordinate.Angle))
+				if ((fPoint.Angle <= fAngle) && (fPoint.Angle > closestCoordinate.Angle))
 				{
 					closestCoordinate = fPoint;
 				}
@@ -193,13 +221,13 @@ namespace FaceDetection.Implementations
 			return closestCoordinate;
 		}
 
-		public PolarCoordinate GetClosestBiggerFPolarCoordinate(PolarCoordinate polarCoordinate)
+		public PolarCoordinate GetClosestBiggerFPolarCoordinate(double fAngle)
 		{
 			double maxAngle = FPolarCoordinates.Max(f => f.Angle);
 			PolarCoordinate closestCoordinate = FPolarCoordinates.First(p => p.Angle == maxAngle);
 			foreach (PolarCoordinate fPoint in FPolarCoordinates)
 			{
-				if ((fPoint.Angle >= polarCoordinate.Angle) && (fPoint.Angle < closestCoordinate.Angle))
+				if ((fPoint.Angle >= fAngle) && (fPoint.Angle < closestCoordinate.Angle))
 				{
 					closestCoordinate = fPoint;
 				}
@@ -207,12 +235,24 @@ namespace FaceDetection.Implementations
 			return closestCoordinate;
 		}
 
-		public double GetScreenAngle(PolarCoordinate eyeDetectedCoordinate)
+		public PolarCoordinate GetScreenPolarCoordinate(PolarCoordinate eyeDetectedPolarCoordinate)
 		{
-			PolarCoordinate FfLessCoordinate = GetClosestLessFPolarCoordinate(eyeDetectedCoordinate);
-			PolarCoordinate FfBigCoordinate = GetClosestBiggerFPolarCoordinate(eyeDetectedCoordinate);
+			double screenAngle = GetScreenAngle(eyeDetectedPolarCoordinate.Angle);
+			double screenRadius = GetScreenRadius(eyeDetectedPolarCoordinate, screenAngle);
+			PolarCoordinate screenPolarCoordinate = new PolarCoordinate()
+			{
+				Angle = screenAngle,
+				Radius = screenRadius,
+			};
+			return screenPolarCoordinate;
+		}
 
-			double Ff = eyeDetectedCoordinate.Angle;
+		public double GetScreenAngle(double fAngle)
+		{
+			PolarCoordinate FfLessCoordinate = GetClosestLessFPolarCoordinate(fAngle);
+			PolarCoordinate FfBigCoordinate = GetClosestBiggerFPolarCoordinate(fAngle);
+
+			double Ff = fAngle;
 			double FfLess = FfLessCoordinate.Angle;
 			double FfBig = FfBigCoordinate.Angle;
 			double FsLess = FPolarCoordinatesWithCorrespondingSCoordinate.First(pair =>
@@ -226,6 +266,33 @@ namespace FaceDetection.Implementations
 				return FsLess;
 			}
 			double result = ((Ff - FfLess)/(FfBig - FfLess))*(FsBig - FsLess) + FsLess;
+			return result;
+		}
+
+		public double GetScreenRadius(PolarCoordinate fCoordinate, double sAngle)
+		{
+			PolarCoordinate sLessCoordinate = GetClosestLessSPolarCoordinate(sAngle);
+			PolarCoordinate sBigCoordinate = GetClosestBiggerSPolarCoordinate(sAngle);
+
+			double Fs = sAngle;
+			double FsLess = sLessCoordinate.Angle;
+			double FsBig = sBigCoordinate.Angle;
+
+			double LsBig = sBigCoordinate.Radius;
+
+			double LfBig = FPolarCoordinatesWithCorrespondingSCoordinate.First(pair =>
+				(pair.SPolarCoordinate.Angle == sBigCoordinate.Angle) &&
+				(pair.SPolarCoordinate.Radius == sBigCoordinate.Radius)).FPolarCoordinate.Radius;
+
+			double LfLess = FPolarCoordinatesWithCorrespondingSCoordinate.First(pair =>
+				(pair.SPolarCoordinate.Angle == sLessCoordinate.Angle) && 
+				(pair.SPolarCoordinate.Radius == sLessCoordinate.Radius)).FPolarCoordinate.Radius;
+
+			double LsLess = sLessCoordinate.Radius;
+
+			double Lf = fCoordinate.Radius;
+
+			double result = Lf / (((Fs - FsLess)/(FsBig - FsLess))*(LfBig/LsBig) + ((FsBig - Fs)/(FsBig - FsLess))*(LfLess/LsLess));
 			return result;
 		}
 

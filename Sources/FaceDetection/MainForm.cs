@@ -85,15 +85,9 @@ namespace FaceDetection
 
 		private void SetWebcamSettings()
 		{
-			// set the image capture size
 			this.WebCamCapture.CaptureHeight = 480;
 			this.WebCamCapture.CaptureWidth = 640;
-
-			// change the capture time frame
 			this.WebCamCapture.TimeToCapture_milliseconds = 2;
-
-			//start the video capture. let the control handle the
-			//frame numbers.
 			this.WebCamCapture.Start(0);
 		}
 
@@ -132,8 +126,6 @@ namespace FaceDetection
 			ChangeCalibrationButtonsParameters();
 		}
 
-		#endregion EventActions
-
 		private void DisplayAnglesValues(double sideLongTilt, double rotationAroundVerticalOx, double backForthAngle)
 		{
 			this.sideLongTiltLabel.Text = sideLongTilt.ToString();
@@ -153,18 +145,35 @@ namespace FaceDetection
 		private void Analize_btn_Click(object sender, EventArgs e)
 		{
 			DrawingHelper.Clear(backgroundPanel);
-			//Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)Image.FromFile(photoPathTextBox.Text));
 			Image<Bgr, Byte> imageFrame = new Image<Bgr, Byte>((Bitmap)this._currentWebCamImage);
 			DetectionResult detectionResult = _detectionService.GetDetectionResult(imageFrame);
 			if (detectionResult.Status == DetectionStatus.Success)
 			{
 				AnglesLogic(detectionResult);
-				ViewDetectionLogic(detectionResult, imageFrame);
+				ViewDetectionLogic(detectionResult);
 				DrawDetectedObjects(detectionResult, imageFrame);
 				fixedPicture.Image = imageFrame.Bitmap;
 				HideParantPanel();
 			}
 		}
+
+		private void TestButton_Click(object sender, EventArgs e)
+		{
+			Point rightEye = new Point(Convert.ToInt32(xDetectedEye.Text), Convert.ToInt32(yDetectedEye.Text));
+			DrawingHelper.Clear(backgroundPanel);
+			ViewDetectionLogic(detectionResult: new DetectionResult()
+			{
+				EyeCentersPair = new EyePair()
+				{
+					RightEye = rightEye,
+				}
+			});
+			HideParantPanel();
+		}
+
+		#endregion EventActions
+
+
 
 		private void DrawDetectedObjects(DetectionResult detectionResult, Image<Bgr, Byte> imageFrame)
 		{
@@ -196,36 +205,27 @@ namespace FaceDetection
 			DisplayAnglesValues(sideLongTilt, rotationAroundVerticalOx, backForthAngle);
 		}
 
-		private void ViewDetectionLogic(DetectionResult detectionResult, Image<Bgr, Byte> imageFrame)
+		private void ViewDetectionLogic(DetectionResult detectionResult)
 		{
 			Point rightEye = detectionResult.EyeCentersPair.RightEye;
-			//Point rightEye = new Point(407, 233);
 			//RecalculateCoordinates(detectionResult, ref rightEye);
 			
 			//draw detected eye poit 
-			DrawingHelper.DrawPoint(rightEye, imageFrame, Color.Blue);
-			DrawingHelper.DrawPoint(backgroundPanel, rightEye, Color.Brown);
+			DrawingHelper.DrawPoint(backgroundPanel, rightEye, Color.Brown, 1);
 			//draw all calibrated points
 			DrawPointsWithColors();
 			//draw base line
 			DrawingHelper.DrawLine(backgroundPanel, _calibrationService.FBaseLine.P1, _calibrationService.FBaseLine.P2, Color.Crimson);
 
 			
-			double eyePointAngle = _calibrationService.GetFLineAngle(rightEye);
-			double eyePointRadius = new LineSegment2D(rightEye, _calibrationService.FCenterPoint).Length;
 			PolarCoordinate eyePolarCoordinate = new PolarCoordinate()
 			{
-				Angle = eyePointAngle,
-				Radius = eyePointRadius,
+				Angle = _calibrationService.GetFLineAngle(rightEye),
+				Radius = new LineSegment2D(rightEye, _calibrationService.FCenterPoint).Length,
 			};
-			//screen angle calculation
-			double screenAngle = _calibrationService.GetScreenAngle(eyePolarCoordinate);
-			Point screenPoint = MathHelper.ConvertPolarToRectangularCoordinaty(new PolarCoordinate()
-			{
-				Angle = screenAngle,
-				Radius = 200,
-			}, _calibrationService.SCenterPoint);
-			this.SAngleLabel.Text = screenAngle.ToString();
+			PolarCoordinate screenPolarCoordinate = _calibrationService.GetScreenPolarCoordinate(eyePolarCoordinate);
+			Point screenPoint = MathHelper.ConvertPolarToRectangularCoordinaty(screenPolarCoordinate, _calibrationService.SCenterPoint);
+			this.SAngleLabel.Text = screenPolarCoordinate.Angle.ToString();
 			DrawingHelper.DrawLine(backgroundPanel, screenPoint, _calibrationService.SCenterPoint, Color.Red);
 			DrawingHelper.DrawPoint(backgroundPanel, _calibrationService.SCenterPoint, Color.Brown);
 		}
